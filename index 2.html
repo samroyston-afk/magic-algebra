@@ -1,0 +1,2064 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Castle of Unknowns</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Cinzel+Decorative:wght@700;900&family=Grenze+Gotisch:wght@500;700;800&display=swap">
+<style>
+/* Layout: a moonlit castle painted across the top of the map, a carved stone list of floors below; each floor is a torchlit maze race against a creeping Shadow, above a parchment riddle and iron-bound doors. One deliberate night-time look. */
+:root {
+  color-scheme: dark;
+  --night: #0b0a14;
+  --stone: #14121d;
+  --stone-2: #1d1a2a;
+  --stone-3: #2a2540;
+  --mortar: #3b3552;
+  --mortar-hi: #5e5680;
+  --gold: #f2c46d;
+  --gold-deep: #b9862f;
+  --gold-soft: rgba(242, 196, 109, 0.18);
+  --gold-glow: rgba(242, 196, 109, 0.55);
+  --arcane: #a99bff;
+  --arcane-soft: rgba(169, 155, 255, 0.2);
+  --teal: #62e8c6;
+  --danger: #ff5a5a;
+  --danger-soft: rgba(255, 90, 90, 0.25);
+  --parchment: #f2e6c9;
+  --parchment-2: #e2cfa3;
+  --ink: #2b2118;
+  --ink-soft: #6b5a45;
+  --ink-accent: #6f36a8;
+  --oak: #6e4528;
+  --oak-dark: #3f2715;
+  --oak-light: #96643b;
+  --iron: #24201e;
+  --iron-hi: #57504a;
+  --chalk: #f4f0ff;
+  --mist: #b8b2cf;
+  --scrim: rgba(6, 5, 12, 0.8);
+  --shadow: rgba(0, 0, 0, 0.55);
+  --title: 'Cinzel Decorative', 'Palatino Linotype', Palatino, Georgia, serif;
+  --display: 'Grenze Gotisch', 'Palatino Linotype', Palatino, Georgia, serif;
+  --body: 'Atkinson Hyperlegible', Verdana, 'Segoe UI', system-ui, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { height: 100%; -webkit-text-size-adjust: 100%; }
+body { height: 100%; margin: 0; background: radial-gradient(130% 70% at 50% -20%, #2a2148, var(--night) 62%), var(--night); color: var(--chalk); font-family: var(--body); font-size: 16px; line-height: 1.45; -webkit-tap-highlight-color: transparent; }
+html.playing, html.playing body { overflow: hidden; overscroll-behavior: none; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:disabled { cursor: default; }
+:focus-visible { outline: 3px solid var(--arcane); outline-offset: 2px; }
+h1, h2, h3, p { margin: 0; }
+#app { position: relative; min-height: 100%; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+html.playing #app { height: 100%; }
+.screen { max-width: 580px; margin: 0 auto; }
+.icon-btn { width: 44px; height: 44px; flex: none; padding: 0; border-radius: 12px; border: 1.5px solid var(--mortar); background: var(--stone-2); display: grid; place-items: center; }
+.icon-btn svg { width: 22px; height: 22px; }
+.btn { min-height: 52px; padding: 12px 18px; border-radius: 14px; border: 2px solid var(--mortar-hi); background: linear-gradient(180deg, var(--stone-3), var(--stone-2)); font-weight: 700; font-size: 17px; line-height: 1.15; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-align: center; }
+.btn.primary { background: linear-gradient(180deg, #ffd98c, var(--gold) 55%, var(--gold-deep)); border-color: var(--gold-deep); color: var(--ink); box-shadow: 0 0 26px var(--gold-soft), inset 0 1px 0 rgba(255,255,255,.5); }
+.btn.ghost { background: transparent; }
+.btn:disabled { opacity: 0.45; }
+.btn:active:not(:disabled) { transform: translateY(2px); }
+.btn svg { width: 22px; height: 22px; }
+.math { font-weight: 700; font-variant-numeric: lining-nums; }
+.v { font-style: italic; font-weight: 700; color: var(--ink-accent); padding: 0 0.03em; }
+.box { display: inline-block; width: 1.05em; height: 1.05em; vertical-align: -0.16em; border: 0.08em solid var(--ink-accent); border-radius: 0.16em; background: var(--arcane-soft); }
+.frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; font-size: 0.78em; margin: 0 0.12em; line-height: 1.12; }
+.frac .ft { border-bottom: 0.08em solid currentColor; padding: 0 0.18em 0.04em; }
+.frac .fb { padding: 0.04em 0.18em 0; }
+sup { font-size: 0.6em; line-height: 0; vertical-align: 0.75em; }
+.ml { display: block; }
+.star { width: 20px; height: 20px; }
+.star path { fill: transparent; stroke: currentColor; stroke-width: 1.6; opacity: 0.45; }
+.star.on path { fill: var(--gold); stroke: var(--gold); opacity: 1; }
+.stars { display: inline-flex; gap: 2px; vertical-align: middle; }
+.gem { width: 18px; height: 18px; vertical-align: -3px; }
+.chip { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 700; border: 1.5px solid var(--mortar-hi); color: var(--chalk); background: rgba(20,18,29,.6); }
+
+/* ===== map ===== */
+.map { padding-block: 14px 48px; display: flex; flex-direction: column; gap: 18px; }
+.map-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand { font: 900 clamp(20px, 6vw, 26px)/1.05 var(--title); color: var(--gold); text-shadow: 0 0 20px var(--gold-soft), 0 2px 0 #3a2410; }
+.scene { position: relative; border-radius: 18px; overflow: hidden; border: 1.5px solid var(--mortar); aspect-ratio: 360 / 210; max-width: 100%; background: #120f22; }
+.scene svg { display: block; width: 100%; height: 100%; }
+.scene .tw { animation: twinkle 3s ease-in-out infinite; }
+@keyframes twinkle { 50% { opacity: .3; } }
+.scene .lit { animation: flick 2.4s ease-in-out infinite; }
+@keyframes flick { 30% { opacity: .78; } 60% { opacity: 1; } 80% { opacity: .86; } }
+.hero { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 14px; align-items: center; margin-top: -58px; position: relative; padding-inline: 8px; }
+.portrait { width: 120px; height: 150px; border-radius: 60px 60px 16px 16px; background: radial-gradient(80% 60% at 50% 30%, var(--arcane-soft), transparent 70%), var(--stone-2); border: 2px solid var(--gold-deep); box-shadow: 0 10px 30px var(--shadow), 0 0 0 4px var(--night); display: grid; place-items: end center; overflow: hidden; }
+.portrait svg { width: 120px; height: 150px; }
+.hero-text { display: grid; gap: 6px; min-width: 0; padding-top: 52px; }
+.hero-name { font: 700 clamp(28px, 8vw, 40px)/1 var(--display); color: var(--chalk); overflow-wrap: anywhere; text-wrap: balance; }
+.hero-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.tally { display: grid; grid-template-columns: repeat(3, 1fr); border-block: 1.5px solid var(--mortar); }
+.tally > div { padding: 12px 10px; display: grid; gap: 2px; min-width: 0; }
+.tally > div + div { border-left: 1.5px solid var(--mortar); }
+.tally b { font-size: 22px; line-height: 1.1; font-variant-numeric: tabular-nums; display: flex; align-items: center; gap: 6px; }
+.tally span { font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mist); }
+.map-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.floor-head { font: 700 26px/1 var(--display); color: var(--mist); }
+.floors { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column-reverse; gap: 10px; }
+.plaque { width: 100%; display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 14px; align-items: center; text-align: left; padding: 12px 14px; border-radius: 14px; border: 1.5px solid var(--mortar-hi); background: linear-gradient(180deg, var(--stone-3), var(--stone-2)); box-shadow: 0 4px 0 var(--night), inset 0 1px 0 rgba(255,255,255,0.05); }
+.plaque:active { transform: translateY(2px); }
+.plaque .num { width: 52px; height: 52px; border-radius: 26px 26px 8px 8px; display: grid; place-items: center; font: 900 22px/1 var(--title); color: var(--ink); background: linear-gradient(180deg, #ffd98c, var(--gold) 60%, var(--gold-deep)); box-shadow: 0 0 16px var(--gold-soft); }
+.plaque .txt { display: grid; gap: 2px; min-width: 0; }
+.plaque .yr { font-size: 11.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mist); }
+.plaque .nm { font: 700 22px/1.1 var(--display); color: var(--chalk); }
+.plaque .sk { font-size: 14.5px; color: var(--mist); }
+.plaque .end { display: grid; justify-items: end; gap: 4px; font-size: 12.5px; color: var(--mist); font-variant-numeric: tabular-nums; }
+.plaque.locked { opacity: 0.55; }
+.plaque.locked .num { background: var(--mortar); color: var(--mist); box-shadow: none; }
+.plaque.next .num { animation: glow 2s ease-in-out infinite; }
+@keyframes glow { 50% { box-shadow: 0 0 28px var(--gold-glow); } }
+.lock { width: 22px; height: 22px; color: var(--mist); }
+.map-foot { font-size: 13.5px; color: var(--mist); text-align: center; max-width: 46ch; margin: 0 auto; }
+
+/* ===== play ===== */
+.play { height: 100%; max-width: 580px; display: flex; flex-direction: column; gap: 7px; padding-block: 8px 10px; }
+.hud { flex: none; display: flex; align-items: center; gap: 8px; min-height: 46px; }
+.hud-mid { flex: 1; min-width: 0; display: grid; gap: 4px; }
+.hud-floor { font: 700 19px/1.05 var(--display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.meter { position: relative; height: 18px; border-radius: 9px; background: linear-gradient(90deg, #2a0f1e, var(--stone-3)); border: 1.5px solid var(--mortar); overflow: hidden; }
+.meter-fill { position: absolute; inset: 0 auto 0 0; width: 50%; background: linear-gradient(90deg, rgba(98,232,198,.15), rgba(98,232,198,.55)); transition: width .25s linear; }
+.meter span { position: relative; display: block; text-align: center; font-size: 11.5px; font-weight: 700; line-height: 15px; letter-spacing: .04em; }
+.meter.close .meter-fill { background: linear-gradient(90deg, rgba(255,90,90,.2), rgba(255,90,90,.7)); }
+.hud-right { display: grid; justify-items: end; gap: 2px; min-width: 64px; }
+.hud-time { font-weight: 700; font-size: 18px; font-variant-numeric: tabular-nums; }
+.hud-gems { display: flex; align-items: center; gap: 4px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--teal); font-size: 14px; }
+.stage { position: relative; flex: 1 1 auto; min-height: 120px; border-radius: 16px; overflow: hidden; background: var(--night); border: 1.5px solid var(--mortar); transition: border-color .3s, box-shadow .3s; }
+.stage.danger { border-color: var(--danger); box-shadow: 0 0 0 2px var(--danger-soft), 0 0 30px var(--danger-soft); }
+.stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.badges { position: absolute; left: 8px; right: 8px; top: 8px; display: flex; justify-content: space-between; gap: 6px; pointer-events: none; }
+.haste { color: var(--gold); border-color: var(--gold-deep); }
+.callout { position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%); z-index: 4; pointer-events: none; font: 900 clamp(26px, 8vw, 40px)/1.05 var(--title); text-align: center; color: var(--gold); text-shadow: 0 0 24px var(--gold-glow), 0 3px 0 #3a2410; white-space: nowrap; animation: callout 0.9s ease-out forwards; }
+.callout.bad { color: #ffd0d0; text-shadow: 0 0 24px var(--danger), 0 3px 0 #3a0f10; }
+@keyframes callout { 0% { transform: translate(-50%, -30%) scale(.7); opacity: 0; } 20% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; } 75% { opacity: 1; } 100% { transform: translate(-50%, -70%) scale(1); opacity: 0; } }
+.count { position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; background: rgba(6,5,12,.55); pointer-events: none; }
+.count b { font: 900 clamp(60px, 20vw, 110px)/1 var(--title); color: var(--gold); text-shadow: 0 0 30px var(--gold-glow), 0 5px 0 #3a2410; animation: pop .45s ease-out; }
+.riddle { flex: none; position: relative; background: linear-gradient(180deg, var(--parchment), var(--parchment-2)); color: var(--ink); border-radius: 8px; padding: 11px 14px; display: grid; gap: 4px; justify-items: center; text-align: center; box-shadow: 0 6px 18px var(--shadow), inset 0 0 0 1px rgba(107,90,69,.35), inset 0 0 26px rgba(107,90,69,.25); }
+.r-prompt { font-weight: 700; font-size: 12.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); }
+.r-prompt .v { text-transform: none; letter-spacing: 0; font-size: 1.2em; }
+.r-ctx { font-size: 15px; color: var(--ink-soft); max-width: 38ch; line-height: 1.35; }
+.r-given, .r-ask { font-size: 17px; font-weight: 700; }
+.r-main { width: 100%; font-size: clamp(26px, 8vw, 40px); line-height: 1.25; white-space: nowrap; overflow: hidden; }
+.r-main.multi { font-size: clamp(22px, 6.6vw, 32px); }
+.whisper { font-size: 14.5px; background: var(--arcane-soft); border: 1.5px dashed var(--ink-accent); border-radius: 8px; padding: 6px 10px; max-width: 40ch; }
+.whisper .box { background: transparent; }
+.status { min-height: 20px; font-size: 14.5px; font-weight: 700; text-align: center; color: var(--mist); }
+.status.good { color: var(--teal); } .status.bad { color: var(--danger); }
+.doors { flex: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.door { position: relative; min-height: 88px; padding: 20px 6px 10px; border: 0; color: var(--parchment); border-radius: 50% 50% 8px 8px / 36% 36% 8px 8px;
+  background: linear-gradient(180deg, transparent 0 30%, var(--iron) 30% 34%, transparent 34% 72%, var(--iron) 72% 76%, transparent 76%), repeating-linear-gradient(90deg, var(--oak) 0 19%, var(--oak-dark) 19% 20%), var(--oak);
+  box-shadow: inset 0 0 0 3px var(--oak-dark), inset 0 0 0 5px var(--iron), inset 0 -18px 24px rgba(0,0,0,.35), 0 5px 0 var(--iron);
+  display: grid; align-content: center; justify-items: center; gap: 1px; transition: transform .15s, filter .2s, opacity .3s; }
+.door::before { content: "\2726"; position: absolute; top: 5px; left: 50%; transform: translateX(-50%); font-size: 12px; color: var(--rune, var(--gold)); text-shadow: 0 0 8px var(--rune, var(--gold)); }
+.door::after { content: ""; position: absolute; right: 13%; top: 52%; width: 8px; height: 8px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff2c4, var(--gold) 60%, var(--gold-deep)); }
+.door .way { font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--parchment-2); opacity: 0.75; }
+.door .lab { font-size: 13px; font-weight: 700; }
+.door .val { font-size: clamp(20px, 6.2vw, 28px); font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; text-shadow: 0 2px 0 var(--oak-dark); white-space: nowrap; }
+.door .val small { font-size: 0.55em; }
+.door .v { color: var(--gold); }
+.door .box { border-color: var(--gold); background: transparent; }
+.door:active:not(:disabled) { transform: translateY(3px); }
+.door.right { filter: drop-shadow(0 0 14px var(--teal)) brightness(1.18); }
+.door.wrong { animation: shake .38s; filter: grayscale(.6) brightness(.65); }
+.door.gone { opacity: .15; filter: grayscale(1); }
+@keyframes shake { 20% { transform: translateX(-6px); } 45% { transform: translateX(5px); } 70% { transform: translateX(-3px); } }
+.spells { flex: none; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+.spells::-webkit-scrollbar { display: none; }
+.spell { flex: 1 0 auto; min-width: 58px; min-height: 50px; padding: 4px 5px; border-radius: 12px; border: 1.5px solid var(--mortar); background: var(--stone-2); display: grid; justify-items: center; align-content: center; gap: 1px; font-size: 11px; font-weight: 700; color: var(--mist); }
+.spell svg { width: 22px; height: 22px; color: var(--arcane); }
+.spell.sig { border-color: var(--rune, var(--gold)); }
+.spell.sig svg { color: var(--rune, var(--gold)); }
+.spell .ch { font-size: 10.5px; color: var(--teal); }
+.spell:disabled { opacity: .38; }
+.overlay { position: absolute; inset: 0; z-index: 6; display: grid; place-items: center; background: var(--scrim); text-align: center; padding: 16px; }
+.overlay-card { display: grid; gap: 10px; justify-items: center; max-width: 320px; }
+.overlay-card h2 { font: 900 clamp(26px, 8vw, 34px)/1.1 var(--title); color: var(--gold); }
+.overlay-card.bad h2 { color: #ffb4b4; }
+
+/* ===== results ===== */
+.results { padding-block: 24px 48px; display: flex; flex-direction: column; gap: 18px; }
+.scroll { position: relative; background: linear-gradient(180deg, var(--parchment), var(--parchment-2)); color: var(--ink); border-radius: 8px; padding: 26px 20px 22px; display: grid; gap: 10px; justify-items: center; text-align: center; box-shadow: 0 16px 40px var(--shadow), inset 0 0 40px rgba(107,90,69,.3); }
+.scroll::before, .scroll::after { content: ""; position: absolute; left: -6px; right: -6px; height: 16px; border-radius: 8px; background: linear-gradient(180deg, var(--oak-light), var(--oak-dark)); }
+.scroll::before { top: -8px; } .scroll::after { bottom: -8px; }
+.scroll h2 { font: 900 clamp(26px, 8vw, 36px)/1.05 var(--title); }
+.where { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
+.big-stars { display: flex; gap: 8px; color: var(--ink-soft); }
+.big-stars .star { width: 44px; height: 44px; }
+.big-stars .star.on path { stroke: var(--oak-dark); }
+.big-stars .star.on { animation: pop .45s cubic-bezier(.3,1.8,.5,1) both; }
+@keyframes pop { from { transform: scale(.3) rotate(-30deg); } to { transform: none; } }
+.criteria { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; font-size: 14.5px; text-align: left; }
+.criteria li::before { content: "\2606  "; color: var(--ink-soft); }
+.criteria li.met::before { content: "\2605  "; color: var(--gold-deep); }
+.res-stats { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; border-top: 1.5px dashed var(--ink-soft); padding-top: 10px; margin: 0; }
+.res-stats div { display: grid; gap: 2px; }
+.res-stats dt { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+.res-stats dd { margin: 0; font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.news { display: grid; gap: 8px; }
+.news p { padding: 12px 14px; border-radius: 12px; background: var(--stone-2); border: 1.5px solid var(--mortar); font-size: 15.5px; }
+.news p.hot { border-color: var(--gold); }
+.res-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.res-actions .wide { grid-column: 1 / -1; }
+.fixes { display: grid; gap: 10px; }
+.fixes h3 { font: 700 28px/1.1 var(--display); }
+.fix-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.fix { background: var(--parchment); color: var(--ink); border-radius: 10px; padding: 14px 16px; display: grid; gap: 8px; }
+.fix .q { font-size: clamp(19px, 5.6vw, 24px); overflow-x: auto; }
+.fix .ctx { font-size: 14px; color: var(--ink-soft); }
+.fix .a { font-size: 15px; color: var(--ink-soft); }
+.fix .a b { color: var(--ink); }
+.fix summary { cursor: pointer; font-weight: 700; color: var(--ink-accent); }
+.steps { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+.steps li { display: grid; grid-template-columns: 26px minmax(0, 1fr); column-gap: 8px; padding: 8px 0; border-top: 1.5px dashed var(--ink-soft); counter-increment: s; }
+.steps li::before { content: counter(s); grid-row: span 2; font: 700 20px/1.3 var(--display); color: var(--ink-accent); }
+.steps .s-m { font-size: clamp(18px, 5.2vw, 22px); line-height: 1.35; overflow-wrap: anywhere; }
+.steps .s-n { font-size: 14.5px; color: var(--ink-soft); }
+
+/* ===== sheets ===== */
+.sheet { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; background: var(--scrim); }
+.sheet-card { width: 100%; max-width: 580px; max-height: calc(100% - 16px); overflow: auto; overscroll-behavior: contain; background: linear-gradient(180deg, var(--stone-3), var(--stone-2) 120px); border: 1.5px solid var(--mortar-hi); border-bottom: 0; border-radius: 20px 20px 0 0; padding: 20px max(18px, env(safe-area-inset-right, 0px)) calc(22px + env(safe-area-inset-bottom, 0px)) max(18px, env(safe-area-inset-left, 0px)); display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; animation: up .26s ease-out; }
+@keyframes up { from { transform: translateY(26px); } to { transform: none; } }
+.sheet-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.sheet-head h2 { font: 700 clamp(30px, 8vw, 38px)/1 var(--display); }
+.meta { font-weight: 700; font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); }
+.muted { color: var(--mist); }
+.example { padding: 16px 12px; border-radius: 10px; text-align: center; font-size: clamp(22px, 6.6vw, 30px); background: var(--parchment); color: var(--ink); white-space: nowrap; overflow-x: auto; }
+.parch { background: linear-gradient(180deg, var(--parchment), var(--parchment-2)); color: var(--ink); border-radius: 10px; padding: 16px; display: grid; gap: 8px; }
+.parch .ttl { font: 700 24px/1.1 var(--display); }
+.creator-top { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 14px; align-items: center; position: sticky; top: -20px; z-index: 2; padding-block: 8px; background: var(--stone-3); margin: -8px -4px 0; padding-inline: 4px; border-radius: 12px; }
+.field { display: grid; gap: 8px; }
+.field > label, fieldset legend { font-weight: 700; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mist); padding: 0; }
+fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; min-width: 0; }
+.name-row { display: flex; gap: 8px; }
+.name-row input { flex: 1 1 0; width: 0; min-width: 0; height: 50px; padding: 0 14px; border-radius: 12px; border: 2px solid var(--mortar); background: var(--night); color: var(--chalk); font: 700 22px/1 var(--display); }
+.name-row input:focus { border-color: var(--gold); outline: none; }
+.opts { display: grid; gap: 8px; }
+.c2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } .c4 { grid-template-columns: repeat(4, minmax(0, 1fr)); } .c5 { grid-template-columns: repeat(5, minmax(0, 1fr)); } .c6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.choice { position: relative; display: grid; }
+.choice input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.choice > span { min-height: 48px; padding: 6px 4px; border-radius: 12px; border: 2px solid var(--mortar); background: var(--night); display: grid; place-items: center; align-content: center; gap: 3px; text-align: center; font-size: 13.5px; font-weight: 700; color: var(--mist); }
+.choice input:checked + span { border-color: var(--gold); background: var(--stone-3); color: var(--chalk); box-shadow: 0 0 0 2px var(--gold-soft); }
+.choice input:focus-visible + span { outline: 3px solid var(--arcane); outline-offset: 2px; }
+.choice.card > span { place-items: start; text-align: left; padding: 10px 12px; gap: 4px; }
+.choice.card b { font-size: 16px; color: var(--chalk); display: flex; align-items: center; gap: 8px; }
+.choice.card small { font-size: 13px; font-weight: 400; color: var(--mist); line-height: 1.3; }
+.dot { width: 26px; height: 26px; border-radius: 50%; border: 2px solid rgba(0,0,0,.3); }
+.el-ico { width: 24px; height: 24px; }
+.danger-btn { color: var(--danger); border-color: var(--danger); background: transparent; }
+.tabs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+.tab { flex: none; min-height: 40px; padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--mortar); background: var(--night); font-weight: 700; font-size: 14px; color: var(--mist); }
+.tab[aria-selected="true"] { background: var(--arcane); border-color: var(--arcane); color: var(--ink); }
+.items { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.item { min-height: 92px; padding: 8px 6px; border-radius: 12px; border: 2px solid var(--mortar); background: var(--night); display: grid; justify-items: center; align-content: center; gap: 4px; text-align: center; font-size: 13px; font-weight: 700; }
+.item svg.thumb { width: 44px; height: 44px; }
+.item .cost { font-size: 12px; color: var(--teal); display: flex; align-items: center; gap: 3px; }
+.item .cost.short { color: var(--mist); }
+.item.on { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold-soft); }
+.book { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.book li { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 12px; background: var(--night); border: 1.5px solid var(--mortar); }
+.book li svg { width: 32px; height: 32px; color: var(--arcane); }
+.book li.locked { opacity: .55; }
+.book b { font-size: 16px; } .book p { font-size: 14px; color: var(--mist); }
+.book .tag { font-size: 12px; font-weight: 700; color: var(--teal); white-space: nowrap; }
+.book li.pickable { cursor: pointer; } .book li.current { border-color: var(--gold); }
+.fx-swatch { width: 36px; height: 36px; border-radius: 50%; }
+.toast { position: fixed; z-index: 60; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); width: max-content; max-width: calc(100% - 32px); padding: 12px 18px; border-radius: 14px; background: var(--chalk); color: var(--ink); font-weight: 700; font-size: 15px; box-shadow: 0 10px 30px var(--shadow); }
+@media (max-height: 720px) { .play { gap: 5px; padding-block: 6px 8px; } .riddle { padding: 7px 12px; gap: 2px; } .r-ctx { font-size: 13.5px; } .door { min-height: 70px; padding-top: 16px; } .spell { min-height: 44px; } }
+@media (prefers-reduced-motion: reduce) { .plaque.next .num, .door.wrong, .big-stars .star.on, .sheet-card, .callout, .count b, .scene .tw, .scene .lit { animation: none; } }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <section id="map" class="screen map" aria-labelledby="heroName">
+    <div class="map-top">
+      <div class="brand">Castle of Unknowns</div>
+      <div style="display:flex;gap:8px">
+        <button class="icon-btn" id="soundBtn" type="button" aria-label="Turn sound off"></button>
+        <button class="icon-btn" id="settingsBtn" type="button" aria-label="Change your sorcerer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 3v18M12 3v18M18 3v18"/><rect x="3.5" y="13" width="5" height="3.6" rx="1" fill="currentColor" stroke="none"/><rect x="9.5" y="6" width="5" height="3.6" rx="1" fill="currentColor" stroke="none"/><rect x="15.5" y="10" width="5" height="3.6" rx="1" fill="currentColor" stroke="none"/></svg></button>
+      </div>
+    </div>
+    <div class="scene" id="scene" aria-hidden="true"></div>
+    <div class="hero">
+      <div class="portrait" id="heroPortrait"></div>
+      <div class="hero-text"><h1 class="hero-name" id="heroName">Sorcerer</h1><div class="hero-chips" id="heroChips"></div></div>
+    </div>
+    <div class="tally">
+      <div><b id="tGems"></b><span>Gems</span></div>
+      <div><b id="tStars"></b><span>Stars</span></div>
+      <div><b id="tSpells"></b><span>Spells</span></div>
+    </div>
+    <div class="map-actions">
+      <button class="btn" id="wardrobeBtn" type="button"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2 6 21h12L12 2Zm0 5.5 1.2 3.6h3.4l-2.8 2 1.1 3.5L12 14.5l-2.9 2.1 1.1-3.5-2.8-2h3.4L12 7.5Z"/></svg>Wardrobe</button>
+      <button class="btn" id="bookBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 5c3-1.5 5.5-1.5 8 0v15c-2.5-1.5-5-1.5-8 0V5Zm8 0c2.5-1.5 5-1.5 8 0v15c-3-1.5-5.5-1.5-8 0"/></svg>Spellbook</button>
+    </div>
+    <h2 class="floor-head">The castle</h2>
+    <ol class="floors" id="floors" aria-label="Castle floors, from the dungeon up"></ol>
+    <p class="map-foot">A Shadow guards every floor. Race it to the stairs: right doors pull you ahead, wrong turns let it catch up. Floors follow the order schools in England teach algebra.</p>
+  </section>
+
+  <section id="play" class="screen play" hidden aria-label="Inside the labyrinth">
+    <div class="hud">
+      <button class="icon-btn" id="quitBtn" type="button" aria-label="Pause"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg></button>
+      <div class="hud-mid">
+        <div class="hud-floor" id="hudFloor"></div>
+        <div class="meter" id="meter"><div class="meter-fill" id="meterFill"></div><span id="meterText">The Shadow wakes</span></div>
+      </div>
+      <div class="hud-right"><div class="hud-time" id="hudTime">0:00</div><div class="hud-gems"><span id="hudGems">0</span><svg class="gem" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3h10l4 5-9 10L1 8l4-5Z" fill="currentColor"/></svg></div></div>
+    </div>
+    <div class="stage" id="stage">
+      <canvas id="maze" aria-hidden="true"></canvas>
+      <div class="badges"><span class="chip" id="progress">Door 1 of 8</span><span class="chip haste" id="haste" hidden></span></div>
+      <div class="count" id="count" hidden><b id="countNum">3</b></div>
+      <div class="overlay" id="overlay" hidden><div class="overlay-card" id="overlayCard"></div></div>
+    </div>
+    <div class="riddle" id="riddle">
+      <div class="r-prompt" id="rPrompt"></div>
+      <div class="r-given math" id="rGiven" hidden></div>
+      <div class="r-ctx" id="rCtx" hidden></div>
+      <div class="r-main math" id="rMain"></div>
+      <div class="r-ask math" id="rAsk" hidden></div>
+      <div class="whisper" id="whisper" hidden></div>
+    </div>
+    <div class="status" id="status" aria-live="polite"></div>
+    <div class="doors" id="doors"></div>
+    <div class="spells" id="spells"></div>
+  </section>
+
+  <section id="results" class="screen results" hidden aria-labelledby="resTitle">
+    <div class="scroll">
+      <div class="where" id="resWhere"></div>
+      <h2 id="resTitle">You escaped the Shadow!</h2>
+      <div class="big-stars" id="resStars"></div>
+      <ul class="criteria" id="resCrit"></ul>
+      <dl class="res-stats">
+        <div><dt>Time</dt><dd id="resTime">0:00</dd></div>
+        <div><dt>Gems</dt><dd id="resGems">+0</dd></div>
+        <div><dt>Wrong turns</dt><dd id="resWrong">0</dd></div>
+      </dl>
+    </div>
+    <div class="news" id="news"></div>
+    <div class="res-actions">
+      <button class="btn primary wide" id="nextBtn" type="button">Climb to the next floor</button>
+      <button class="btn" id="againBtn" type="button">Race this floor again</button>
+      <button class="btn ghost" id="mapBtn" type="button">Castle map</button>
+    </div>
+    <section class="fixes" id="fixes" hidden aria-labelledby="fixTitle">
+      <h3 id="fixTitle">Wrong turns to learn from</h3>
+      <ol class="fix-list" id="fixList"></ol>
+    </section>
+  </section>
+</div>
+
+<div class="sheet" id="floorSheet" role="dialog" aria-modal="true" aria-labelledby="fsName" hidden>
+  <div class="sheet-card">
+    <div class="sheet-head"><div style="display:grid;gap:6px;min-width:0"><div class="meta" id="fsMeta"></div><h2 id="fsName"></h2></div>
+      <button class="icon-btn" type="button" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <p style="font-weight:700;font-size:17px" id="fsSkill"></p>
+    <p class="muted" id="fsBlurb"></p>
+    <div class="example math" id="fsExample"></div>
+    <p class="muted">Eight doors stand between you and the stairs, and the Shadow is right behind you. Choose the door with the right answer to pull ahead. A wrong door sends you into a dead end while the Shadow gains.</p>
+    <p class="muted" id="fsBest"></p>
+    <p id="fsLock" class="muted" hidden></p>
+    <button class="btn primary" id="fsGo" type="button">Start the race</button>
+  </div>
+</div>
+
+<div class="sheet" id="setupSheet" role="dialog" aria-modal="true" aria-labelledby="suTitle" hidden>
+  <form class="sheet-card" id="setupForm" novalidate>
+    <div class="sheet-head"><div style="display:grid;gap:6px;min-width:0"><div class="meta" id="suMeta">Before you enter</div><h2 id="suTitle">Create your sorcerer</h2></div>
+      <button class="icon-btn" type="button" data-close id="suClose" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div class="creator-top"><div class="portrait" id="suPortrait"></div>
+      <div class="field"><label for="nameInput">Name</label><div class="name-row"><input id="nameInput" maxlength="26" autocomplete="off" spellcheck="false">
+        <button class="icon-btn" type="button" id="diceBtn" aria-label="Pick a random name"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><g fill="currentColor"><circle cx="8.3" cy="8.3" r="1.6"/><circle cx="15.7" cy="8.3" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="8.3" cy="15.7" r="1.6"/><circle cx="15.7" cy="15.7" r="1.6"/></g></svg></button></div></div></div>
+    <fieldset><legend>School of magic</legend><div class="opts c2" id="elGrid"></div></fieldset>
+    <fieldset><legend>Special gift</legend><div class="opts" id="giftGrid"></div></fieldset>
+    <fieldset><legend>Skin</legend><div class="opts c5" id="skinGrid"></div></fieldset>
+    <fieldset><legend>Hair</legend><div class="opts c5" id="hairGrid"></div><div class="opts c6" id="hairColGrid"></div></fieldset>
+    <fieldset><legend>Eyes</legend><div class="opts c5" id="eyeGrid"></div></fieldset>
+    <fieldset><legend>School year</legend><div class="opts c5" id="yearGrid"></div><p class="muted" style="font-size:13.5px">This opens the floors that match. Escape a floor to open the next.</p></fieldset>
+    <button class="btn danger-btn" type="button" id="resetBtn" hidden>Start the castle again</button>
+    <button class="btn primary" type="submit" id="suGo">Enter the castle</button>
+  </form>
+</div>
+
+<div class="sheet" id="wardSheet" role="dialog" aria-modal="true" aria-labelledby="wdTitle" hidden>
+  <div class="sheet-card">
+    <div class="sheet-head"><div style="display:grid;gap:6px;min-width:0"><div class="meta" id="wdGems"></div><h2 id="wdTitle">Wardrobe</h2></div>
+      <button class="icon-btn" type="button" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div class="creator-top" style="position:static"><div class="portrait" id="wdPortrait"></div><p class="muted">Spend the gems you win in the castle. Tap anything you own to wear it.</p></div>
+    <div class="tabs" role="tablist" id="wdTabs"></div>
+    <div class="items" id="wdItems" role="tabpanel"></div>
+  </div>
+</div>
+
+<div class="sheet" id="bookSheet" role="dialog" aria-modal="true" aria-labelledby="bkTitle" hidden>
+  <div class="sheet-card">
+    <div class="sheet-head"><div style="display:grid;gap:6px;min-width:0"><div class="meta">Spells and magic</div><h2 id="bkTitle">Spellbook</h2></div>
+      <button class="icon-btn" type="button" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <p class="muted">Your school's spell is yours from the start. The rest arrive as you escape floors. Every floor gives you fresh charges.</p>
+    <ul class="book" id="bkSpells"></ul>
+    <h3 style="font:700 24px/1 var(--display)">Wand sparkle</h3>
+    <p class="muted">Earn stars to unlock new sparkles. Tap one to use it.</p>
+    <ul class="book" id="bkFx"></ul>
+  </div>
+</div>
+
+<div class="sheet" id="stepsSheet" role="dialog" aria-modal="true" aria-labelledby="stTitle" hidden>
+  <div class="sheet-card">
+    <div class="parch"><div class="ttl" id="stTitle">Scroll of Steps</div><p style="font-size:14px;color:var(--ink-soft)">Time stands still while you read.</p><div id="stQ"></div><ol class="steps" id="stSteps"></ol></div>
+    <button class="btn primary" type="button" id="stDone">Got it. Give me a new riddle</button>
+  </div>
+</div>
+
+<div class="sheet" id="pauseSheet" role="dialog" aria-modal="true" aria-labelledby="psTitle" hidden>
+  <div class="sheet-card">
+    <div class="sheet-head"><h2 id="psTitle">Paused</h2></div>
+    <p class="muted" id="psText">The Shadow is frozen until you come back.</p>
+    <div class="res-actions"><button class="btn primary" type="button" id="resumeBtn">Keep racing</button><button class="btn" type="button" id="leaveBtn">Leave this floor</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+/* Rock the Unknown: question bank.
+   Pure functions, no DOM. The page inlines this file; the test harness requires it. */
+(function (root) {
+  'use strict';
+
+  // ---------- randomness ----------
+  let rnd = Math.random;
+  function seed(s) {
+    let a = s >>> 0;
+    rnd = function () {
+      a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function unseed() { rnd = Math.random; }
+  const R = (a, b) => a + Math.floor(rnd() * (b - a + 1));
+  const pick = (arr) => arr[Math.floor(rnd() * arr.length)];
+  const chance = (p) => rnd() < p;
+  function choose(list) {
+    let total = 0;
+    for (const item of list) total += item[0];
+    let r = rnd() * total;
+    for (const item of list) { r -= item[0]; if (r < 0) return item[1]; }
+    return list[list.length - 1][1];
+  }
+  const gcd = (a, b) => (b === 0 ? Math.abs(a) : gcd(b, a % b));
+
+  // ---------- notation ----------
+  const MINUS = '−', TIMES = '×', DIV = '÷';
+  const P = ' + ', M = ' ' + MINUS + ' ', T = ' ' + TIMES + ' ', D = ' ' + DIV + ' ';
+  const LETTERS = ['x', 'y', 'n', 'a', 'm', 'p', 'k', 't', 'w'];
+
+  const num = (n) => (n < 0 ? MINUS + Math.abs(n) : String(n));
+  const v = (l) => '<i class="v">' + l + '</i>';
+  const BOX = '<span class="box"></span>';
+  const frac = (top, bottom) => '<span class="frac"><span class="ft">' + top + '</span><span class="fb">' + bottom + '</span></span>';
+  const sq = (x) => x + '<sup>2</sup>';
+  const lines = (...ls) => ls.map((l) => '<span class="ml">' + l + '</span>').join('');
+
+  function term(c, x) {            // a leading term: x, −x, 3x
+    if (c === 1) return x;
+    if (c === -1) return MINUS + x;
+    return num(c) + x;
+  }
+  function sterm(c, x) {           // a following term with its sign: + x, − 3x
+    const a = Math.abs(c);
+    return (c < 0 ? M : P) + (a === 1 ? x : a + x);
+  }
+  const sgn = (n) => (n < 0 ? M + Math.abs(n) : P + n);
+  const lin = (a, x, b) => term(a, x) + (b === 0 ? '' : sgn(b));
+  function two() {
+    const a = pick(LETTERS);
+    let b = pick(LETTERS);
+    while (b === a) b = pick(LETTERS);
+    return [a, b];
+  }
+  function ord(n) {
+    const s = n % 100;
+    if (s >= 11 && s <= 13) return n + 'th';
+    return n + ({ 1: 'st', 2: 'nd', 3: 'rd' }[n % 10] || 'th');
+  }
+  const jumpText = (d) => (d > 0 ? '+' + d : MINUS + Math.abs(d));
+
+  function Q(o) {
+    o.key = [o.prompt, o.given || '', o.ctx || '', o.html].join('|');
+    return o;
+  }
+
+  // ======================================================================
+  // Night 1: The Bedroom. Missing numbers.
+  // ======================================================================
+  function bedroom() {
+    const ask = 'What goes in the box?', L = BOX + ' =';
+    return choose([
+      [3, () => {
+        const x = R(3, 45), a = R(3, 30), c = x + a, flip = chance(0.4);
+        return Q({ kind: 'eq', unknown: '□', prompt: ask, label: L, answer: x,
+          html: (flip ? a + P + BOX : BOX + P + a) + ' = ' + c,
+          hint: flip ? `What do you add to ${a} to make ${c}?` : `Work backwards. Take ${a} away from ${c}.`,
+          steps: [
+            { m: `${BOX} = ${c}${M}${a}`, n: `Adding ${a} is undone by taking ${a} away.`, k: 'eq' },
+            { m: `${BOX} = ${x}`, k: 'eq' }] });
+      }],
+      [3, () => {
+        if (chance(0.55)) {
+          const c = R(2, 40), a = R(3, 30), x = c + a;
+          return Q({ kind: 'eq', unknown: '□', prompt: ask, label: L, answer: x,
+            html: `${BOX}${M}${a} = ${c}`,
+            hint: `Work backwards. Add the ${a} back on to ${c}.`,
+            steps: [
+              { m: `${BOX} = ${c}${P}${a}`, n: `Taking away ${a} is undone by adding ${a}.`, k: 'eq' },
+              { m: `${BOX} = ${x}`, k: 'eq' }] });
+        }
+        const a = R(20, 70), x = R(3, a - 3), c = a - x;
+        return Q({ kind: 'eq', unknown: '□', prompt: ask, label: L, answer: x,
+          html: `${a}${M}${BOX} = ${c}`,
+          hint: `How far is it from ${c} up to ${a}?`,
+          steps: [
+            { m: `${BOX} = ${a}${M}${c}`, n: `The box is the gap between ${c} and ${a}.`, k: 'eq' },
+            { m: `${BOX} = ${x}`, k: 'eq' }] });
+      }],
+      [3, () => {
+        const x = R(2, 12), a = R(2, 12), c = x * a, flip = chance(0.4);
+        return Q({ kind: 'eq', unknown: '□', prompt: ask, label: L, answer: x,
+          html: (flip ? a + T + BOX : BOX + T + a) + ' = ' + c,
+          hint: `Which number times ${a} makes ${c}?`,
+          steps: [
+            { m: `${BOX} = ${c}${D}${a}`, n: `Times ${a} is undone by dividing by ${a}.`, k: 'eq' },
+            { m: `${BOX} = ${x}`, k: 'eq' }] });
+      }],
+      [2, () => {
+        if (chance(0.6)) {
+          const a = R(2, 10), c = R(2, 12), x = a * c;
+          return Q({ kind: 'eq', unknown: '□', prompt: ask, label: L, answer: x,
+            html: `${BOX}${D}${a} = ${c}`,
+            hint: `Work backwards. What is ${c} ${TIMES} ${a}?`,
+            steps: [
+              { m: `${BOX} = ${c}${T}${a}`, n: `Dividing by ${a} is undone by times ${a}.`, k: 'eq' },
+              { m: `${BOX} = ${x}`, k: 'eq' }] });
+        }
+        const x = R(2, 10), c = R(2, 10), a = x * c;
+        return Q({ kind: 'eq', unknown: '□', prompt: ask, label: L, answer: x,
+          html: `${a}${D}${BOX} = ${c}`,
+          hint: `What times ${c} makes ${a}?`,
+          steps: [
+            { m: `${BOX} = ${a}${D}${c}`, n: `If ${a} ${DIV} the box is ${c}, then ${c} ${TIMES} the box is ${a}.`, k: 'eq' },
+            { m: `${BOX} = ${x}`, k: 'eq' }] });
+      }],
+    ])();
+  }
+
+  // ======================================================================
+  // Night 2: The Garage. Letters for numbers (one step).
+  // ======================================================================
+  function garage() {
+    const l = pick(LETTERS), X = v(l), L = X + ' =', prompt = 'Find ' + X;
+    return choose([
+      [3, () => {
+        const s = R(2, 30), a = R(2, 25), c = s + a, form = R(0, 2);
+        if (form === 2) {
+          return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+            html: `${c} = ${X}${P}${a}`,
+            hint: `Subtract ${a} from both sides to get ${X} on its own.`,
+            steps: [
+              { m: `${c}${M}${a} = ${X}`, n: `Subtract ${a} from both sides.`, k: 'eq' },
+              { m: `${X} = ${s}`, k: 'eq' }] });
+        }
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: (form ? a + P + X : X + P + a) + ' = ' + c,
+          hint: `Subtract ${a} from both sides to get ${X} on its own.`,
+          steps: [
+            { m: `${X} = ${c}${M}${a}`, n: `Subtract ${a} from both sides.`, k: 'eq' },
+            { m: `${X} = ${s}`, k: 'eq' }] });
+      }],
+      [3, () => {
+        const c = R(2, 30), a = R(2, 20), s = c + a;
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${X}${M}${a} = ${c}`,
+          hint: `Undo the ${MINUS} ${a}. Add ${a} to both sides.`,
+          steps: [
+            { m: `${X} = ${c}${P}${a}`, n: `Add ${a} to both sides.`, k: 'eq' },
+            { m: `${X} = ${s}`, k: 'eq' }] });
+      }],
+      [3, () => {
+        const a = R(2, 12), s = R(2, 12), c = a * s;
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${a}${X} = ${c}`,
+          hint: `${a}${X} means ${a} ${TIMES} ${X}. Which number times ${a} makes ${c}?`,
+          steps: [
+            { m: `${X} = ${c}${D}${a}`, n: `${a}${X} means ${a} ${TIMES} ${X}, so divide both sides by ${a}.`, k: 'eq' },
+            { m: `${X} = ${s}`, k: 'eq' }] });
+      }],
+      [2, () => {
+        const a = R(2, 10), c = R(2, 12), s = a * c;
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${X}${D}${a} = ${c}`,
+          hint: `Undo the ${DIV} ${a}. Multiply both sides by ${a}.`,
+          steps: [
+            { m: `${X} = ${c}${T}${a}`, n: `Multiply both sides by ${a}.`, k: 'eq' },
+            { m: `${X} = ${s}`, k: 'eq' }] });
+      }],
+    ])();
+  }
+
+  // ======================================================================
+  // Night 3: Village Hall. Formulae, substitution, two-number puzzles.
+  // ======================================================================
+  function subOne() {
+    const l = pick(LETTERS), X = v(l), a = R(2, 9), val = R(2, 10);
+    let b = R(1, 15) * (chance(0.35) ? -1 : 1);
+    if (a * val + b <= 0) b = Math.abs(b);
+    const ans = a * val + b;
+    return Q({ kind: 'eval', prompt: 'Work it out', given: `If ${X} = ${val}`, label: '=', answer: ans,
+      html: lin(a, X, b),
+      hint: `${a}${X} means ${a} ${TIMES} ${X}. Swap ${X} for ${val}.`,
+      steps: [
+        { m: `${a}${T}${val}${sgn(b)}`, n: `Swap ${X} for ${val}. ${a}${X} means ${a} ${TIMES} ${X}.`, k: 'val' },
+        { m: `${a * val}${sgn(b)}`, n: 'Do the times first.', k: 'val' },
+        { m: String(ans), k: 'val' }] });
+  }
+
+  function subTwo() {
+    const [p, q] = two(), Pv = v(p), Qv = v(q);
+    const pv = R(2, 9), qv = R(2, 9), c = R(2, 6), d = R(2, 5);
+    const given = `If ${Pv} = ${pv} and ${Qv} = ${qv}`;
+    const swap = `Swap ${Pv} for ${pv} and ${Qv} for ${qv}.`;
+    const forms = [
+      () => ({ html: `${c}${Pv}${P}${Qv}`, ans: c * pv + qv,
+        hint: `${c}${Pv} means ${c} ${TIMES} ${Pv}.`,
+        steps: [`${c}${T}${pv}${P}${qv}`, `${c * pv}${P}${qv}`] }),
+      () => (c * pv <= qv ? null : { html: `${c}${Pv}${M}${Qv}`, ans: c * pv - qv,
+        hint: `${c}${Pv} means ${c} ${TIMES} ${Pv}. Do the times before the take away.`,
+        steps: [`${c}${T}${pv}${M}${qv}`, `${c * pv}${M}${qv}`] }),
+      () => ({ html: `${Pv}${Qv}`, ans: pv * qv,
+        hint: `${Pv}${Qv} means ${Pv} ${TIMES} ${Qv}.`,
+        steps: [`${pv}${T}${qv}`] }),
+      () => ({ html: `${c}${Pv}${P}${d}${Qv}`, ans: c * pv + d * qv,
+        hint: 'Do both times first, then add.',
+        steps: [`${c}${T}${pv}${P}${d}${T}${qv}`, `${c * pv}${P}${d * qv}`] }),
+    ];
+    let f = null;
+    while (!f) f = pick(forms)();
+    const steps = f.steps.map((m, i) => ({ m, n: i === 0 ? swap : '', k: 'val' }));
+    steps.push({ m: String(f.ans), k: 'val' });
+    return Q({ kind: 'eval', prompt: 'Work it out', given, label: '=', answer: f.ans, html: f.html, hint: f.hint, steps });
+  }
+
+  const FORMULAS = [
+    () => {
+      const p = R(5, 15), f = R(1, 4), n = R(2, 8), ans = p * n + f, V = v('n'), S = v('C');
+      return { ctx: `Healing potions cost ${p} gold coins each, plus ${f} for the bottle. For ${V} potions the cost in coins is`,
+        html: `${S} = ${p}${V}${P}${f}`, ask: `Find ${S} when ${V} = ${n}`, label: `${S} =`, unit: 'coins', answer: ans,
+        hint: `Swap ${V} for ${n}. ${p}${V} means ${p} ${TIMES} ${V}.`,
+        steps: [
+          { m: `${S} = ${p}${T}${n}${P}${f}`, n: `Swap ${V} for ${n}.`, k: 'eq' },
+          { m: `${S} = ${p * n}${P}${f}`, n: 'Times first, then add.', k: 'eq' },
+          { m: `${S} = ${ans}`, k: 'eq' }] };
+    },
+    () => {
+      const p = R(8, 20), t = R(2, 9), ans = p * t, V = v('t'), S = v('M');
+      return { ctx: `Spell scrolls cost ${p} coins each. For ${V} scrolls the money spent in coins is`,
+        html: `${S} = ${p}${V}`, ask: `Find ${S} when ${V} = ${t}`, label: `${S} =`, unit: 'coins', answer: ans,
+        hint: `${p}${V} means ${p} ${TIMES} ${V}.`,
+        steps: [
+          { m: `${S} = ${p}${T}${t}`, n: `Swap ${V} for ${t}.`, k: 'eq' },
+          { m: `${S} = ${ans}`, k: 'eq' }] };
+    },
+    () => {
+      const s = R(3, 5), e = R(4, 12), n = R(6, 14), ans = s * n + e, V = v('n'), S = v('T');
+      return { ctx: `Each spell lesson lasts ${s} minutes, plus ${e} minutes to tidy the tower. For ${V} lessons the time in minutes is`,
+        html: `${S} = ${s}${V}${P}${e}`, ask: `Find ${S} when ${V} = ${n}`, label: `${S} =`, unit: 'min', answer: ans,
+        hint: `Swap ${V} for ${n}. Times first, then add.`,
+        steps: [
+          { m: `${S} = ${s}${T}${n}${P}${e}`, n: `Swap ${V} for ${n}.`, k: 'eq' },
+          { m: `${S} = ${s * n}${P}${e}`, n: 'Times first, then add.', k: 'eq' },
+          { m: `${S} = ${ans}`, k: 'eq' }] };
+    },
+    () => {
+      const g = pick([20, 25, 30, 40, 50]), f = R(1, 9) * 10, n = R(2, 9), ans = g * n + f, V = v('n'), S = v('F');
+      return { ctx: `The castle starts with ${f} candles lit, and the sorcerer lights ${g} more on every floor. After ${V} floors the number of candles is`,
+        html: `${S} = ${g}${V}${P}${f}`, ask: `Find ${S} when ${V} = ${n}`, label: `${S} =`, unit: 'candles', answer: ans,
+        hint: `Swap ${V} for ${n}. Times first, then add.`,
+        steps: [
+          { m: `${S} = ${g}${T}${n}${P}${f}`, n: `Swap ${V} for ${n}.`, k: 'eq' },
+          { m: `${S} = ${g * n}${P}${f}`, n: 'Times first, then add.', k: 'eq' },
+          { m: `${S} = ${ans}`, k: 'eq' }] };
+    },
+    () => {
+      const s0 = R(5, 8) * 10, b = R(2, 5), n = R(2, 8), ans = s0 - b * n, V = v('n'), S = v('Q');
+      return { ctx: `The sorcerer starts with ${s0} quills and wears out ${b} with every spell they write. After ${V} spells the quills left are`,
+        html: `${S} = ${s0}${M}${b}${V}`, ask: `Find ${S} when ${V} = ${n}`, label: `${S} =`, unit: 'quills', answer: ans,
+        hint: `Swap ${V} for ${n}. Do the times before the take away.`,
+        steps: [
+          { m: `${S} = ${s0}${M}${b}${T}${n}`, n: `Swap ${V} for ${n}.`, k: 'eq' },
+          { m: `${S} = ${s0}${M}${b * n}`, n: 'Times before take away.', k: 'eq' },
+          { m: `${S} = ${ans}`, k: 'eq' }] };
+    },
+    () => {
+      const sp = pick([30, 40, 45, 50, 60]), h = R(2, 6), ans = sp * h, V = v('h'), S = v('D');
+      return { ctx: `A flying carpet travels ${sp} miles an hour. In ${V} hours the distance in miles is`,
+        html: `${S} = ${sp}${V}`, ask: `Find ${S} when ${V} = ${h}`, label: `${S} =`, unit: 'miles', answer: ans,
+        hint: `${sp}${V} means ${sp} ${TIMES} ${V}.`,
+        steps: [
+          { m: `${S} = ${sp}${T}${h}`, n: `Swap ${V} for ${h}.`, k: 'eq' },
+          { m: `${S} = ${ans}`, k: 'eq' }] };
+    },
+  ];
+
+  function formula() {
+    const f = pick(FORMULAS)();
+    return Q(Object.assign({ kind: 'formula', prompt: 'Use the formula' }, f));
+  }
+
+  function pairSumDiff() {
+    const [p, q] = two(), big = R(5, 15), small = R(1, big - 1), s = big + small, d = big - small, askP = chance(0.6);
+    const A = askP ? p : q, ans = askP ? big : small;
+    return Q({ kind: 'pair-sd', unknown: A, prompt: 'Find ' + v(A), label: v(A) + ' =', answer: ans,
+      html: lines(`${v(p)}${P}${v(q)} = ${s}`, `${v(p)}${M}${v(q)} = ${d}`),
+      hint: `Find two numbers that add up to ${s}. Which pair is ${d} apart?`,
+      steps: [
+        { m: `${big}${P}${small} = ${s}`, n: `These two add up to ${s}.`, k: 'eq' },
+        { m: `${big}${M}${small} = ${d}`, n: `And they are ${d} apart.`, k: 'eq' },
+        { m: `${v(A)} = ${ans}`, n: askP ? `${v(p)} is the bigger number.` : `${v(q)} is the smaller number.`, k: 'eq' }] });
+  }
+
+  function pairProduct() {
+    let a = R(2, 9), b = R(2, 12);
+    while (b === a) b = R(2, 12);
+    const lo = Math.min(a, b), hi = Math.max(a, b), prod = lo * hi, sum = lo + hi, big = chance(0.6);
+    const pairs = [];
+    for (let i = 1; i * i <= prod; i++) if (prod % i === 0) pairs.push(i + T + prod / i);
+    const ans = big ? hi : lo;
+    return Q({ kind: 'pair-ps', prompt: big ? 'What is the bigger number?' : 'What is the smaller number?',
+      label: big ? 'Bigger =' : 'Smaller =', answer: ans,
+      ctx: `Two numbers multiply to make ${prod} and add up to ${sum}.`,
+      html: lines(`${v('a')}${T}${v('b')} = ${prod}`, `${v('a')}${P}${v('b')} = ${sum}`),
+      hint: `List the pairs that multiply to make ${prod}. Which pair adds up to ${sum}?`,
+      steps: [
+        { m: pairs.join(', '), n: `Pairs that multiply to make ${prod}.` },
+        { m: `${lo}${P}${hi} = ${sum}`, n: `This pair adds up to ${sum}.`, k: 'eq' },
+        { m: String(ans), n: `So the ${big ? 'bigger' : 'smaller'} number is ${ans}.`, k: 'val' }] });
+  }
+
+  function village() {
+    return choose([[3, subOne], [2, subTwo], [3, formula], [1, pairSumDiff], [1, pairProduct]])();
+  }
+
+  // ======================================================================
+  // Night 4: The Pub Gig. Sequences.
+  // ======================================================================
+  function arith(asc) {
+    if (asc) return { a: R(1, 30), d: R(2, 12) };
+    const d = -R(2, 9);
+    return { a: R(-d * 5 + 1, -d * 5 + 40), d };
+  }
+
+  function seqNext() {
+    const { a, d } = arith(chance(0.72));
+    const t = [0, 1, 2, 3].map((i) => a + i * d), ans = a + 4 * d, j = jumpText(d);
+    return Q({ kind: 'seq', prompt: 'What comes next?', label: BOX + ' =', answer: ans,
+      html: t.join(', ') + ', ' + BOX,
+      hint: 'What is the jump from one number to the next?',
+      steps: [
+        { m: j + ' each time', n: `${t[0]} to ${t[1]} is a jump of ${j}.` },
+        { m: `${t[3]}${d > 0 ? P : M}${Math.abs(d)} = ${ans}`, n: 'Do the same jump again.', k: 'eq' }] });
+  }
+
+  function seqGap() {
+    const { a, d } = arith(chance(0.7));
+    const t = [0, 1, 2, 3, 4].map((i) => a + i * d), k = R(1, 3), ans = t[k], j = jumpText(d);
+    const seen = k === 1 ? [2, 3] : [0, 1];
+    return Q({ kind: 'seq', prompt: 'Which number is missing?', label: BOX + ' =', answer: ans,
+      html: t.map((x, i) => (i === k ? BOX : x)).join(', '),
+      hint: 'Find the jump between two numbers you can see.',
+      steps: [
+        { m: j + ' each time', n: `${t[seen[0]]} to ${t[seen[1]]} is a jump of ${j}.` },
+        { m: `${t[k - 1]}${d > 0 ? P : M}${Math.abs(d)} = ${ans}`, n: 'Do one jump from the number before the gap.', k: 'eq' }] });
+  }
+
+  function seqTerm() {
+    const c = R(2, 9), b = R(-5, 10) || 3, N = pick([5, 6, 7, 8, 9, 10, 10, 12, 15, 20, 20, 50, 100]), ans = c * N + b, n = v('n');
+    return Q({ kind: 'seq-term', prompt: `What is the ${ord(N)} term?`, label: `Term ${N} =`, answer: ans, N,
+      html: `${n}th term = ${lin(c, n, b)}`,
+      hint: `Put ${n} = ${N} into the rule.`,
+      steps: [
+        { m: `${c}${T}${N}${sgn(b)}`, n: `Swap ${n} for ${N}.`, k: 'val' },
+        { m: `${c * N}${sgn(b)}`, n: 'Times first.', k: 'val' },
+        { m: String(ans), k: 'val' }] });
+  }
+
+  function seqRuleConst() {
+    const c = R(2, 9), b = R(1, 12), t = [1, 2, 3, 4].map((i) => c * i + b), n = v('n');
+    return Q({ kind: 'seq-rule', prompt: 'Finish the rule', label: BOX + ' =', answer: b,
+      html: lines(t.join(', ') + ', …', `${n}th term = ${c}${n}${P}${BOX}`),
+      hint: `The jump is ${c}, so the rule starts ${c}${n}. What do you add to ${c} to make ${t[0]}?`,
+      steps: [
+        { m: `${c}${T}1 = ${c}`, n: `The jump is +${c}, so the rule starts ${c}${n}. For the 1st term that gives ${c}.`, k: 'eq' },
+        { m: `${t[0]}${M}${c} = ${b}`, n: `The 1st term is ${t[0]}, so add ${b}.`, k: 'eq' },
+        { m: `${n}th term = ${c}${n}${P}${b}`, n: `Check: when ${n} = 2 it gives ${t[1]}.` }] });
+  }
+
+  function seqRuleCoef() {
+    const c = R(2, 9), b = R(1, 12), t = [1, 2, 3, 4].map((i) => c * i + b), n = v('n');
+    return Q({ kind: 'seq-rule', prompt: 'Finish the rule', label: BOX + ' =', answer: c,
+      html: lines(t.join(', ') + ', …', `${n}th term = ${BOX}${n}${P}${b}`),
+      hint: `The number in front of ${n} is the jump between the terms.`,
+      steps: [
+        { m: `${t[1]}${M}${t[0]} = ${c}`, n: `The jump is ${c} each time.`, k: 'eq' },
+        { m: `${n}th term = ${c}${n}${P}${b}`, n: `The number in front of ${n} is the jump. Check: ${c} ${TIMES} 1 + ${b} = ${t[0]}.` }] });
+  }
+
+  function seqStart() {
+    const a = R(1, 20), d = R(2, 9), N = R(4, 8);
+    const t = Array.from({ length: N }, (_, i) => a + i * d), ans = t[N - 1];
+    return Q({ kind: 'seq-start', prompt: `What is the ${ord(N)} number?`, label: `${ord(N)} =`, answer: ans, N,
+      ctx: `Start at ${a} and add ${d} each time.`,
+      html: `${a}, ${a + d}, …`,
+      hint: `Keep adding ${d} until you reach the ${ord(N)} number.`,
+      steps: [
+        { m: t.join(', '), n: `Keep adding ${d}.` },
+        { m: `${a}${P}${N - 1}${T}${d} = ${ans}`, n: `Quick way: the start plus ${N - 1} jumps of ${d}.`, k: 'eq' }] });
+  }
+
+  function pub() {
+    return choose([[3, seqNext], [2, seqGap], [2, seqTerm], [2, seqRuleConst], [1, seqRuleCoef], [1, seqStart]])();
+  }
+
+  // ======================================================================
+  // Night 5: Club Night. Two-step equations.
+  // ======================================================================
+  function club() {
+    const l = pick(LETTERS), X = v(l), L = X + ' =', prompt = 'Find ' + X;
+    return choose([
+      [4, () => {
+        const a = R(2, 9), s = R(1, 12), b = R(1, 20), c = a * s + b, flip = chance(0.25);
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: flip ? `${b}${P}${a}${X} = ${c}` : `${a}${X}${P}${b} = ${c}`,
+          hint: `First undo the + ${b}. Then undo the ${TIMES} ${a}.`,
+          steps: [
+            { m: `${a}${X} = ${c - b}`, n: `Subtract ${b} from both sides.`, k: 'eq' },
+            { m: `${X} = ${s}`, n: `Divide both sides by ${a}.`, k: 'eq' }] });
+      }],
+      [3, () => {
+        const a = R(2, 9), s = R(1, 12), b = R(1, Math.min(20, a * s - 1)), c = a * s - b;
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${a}${X}${M}${b} = ${c}`,
+          hint: `First undo the ${MINUS} ${b}. Then undo the ${TIMES} ${a}.`,
+          steps: [
+            { m: `${a}${X} = ${c + b}`, n: `Add ${b} to both sides.`, k: 'eq' },
+            { m: `${X} = ${s}`, n: `Divide both sides by ${a}.`, k: 'eq' }] });
+      }],
+      [2, () => {
+        const a = R(2, 6), q = R(2, 10), s = a * q, b = R(1, 12), c = q + b;
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${frac(X, a)}${P}${b} = ${c}`,
+          hint: `${frac(X, a)} means ${X} ${DIV} ${a}. Undo the + ${b} first.`,
+          steps: [
+            { m: `${frac(X, a)} = ${q}`, n: `Subtract ${b} from both sides.`, k: 'eq' },
+            { m: `${X} = ${s}`, n: `Multiply both sides by ${a}.`, k: 'eq' }] });
+      }],
+      [1, () => {
+        const a = R(2, 6), q = R(3, 12), s = a * q, b = R(1, q - 1), c = q - b;
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${frac(X, a)}${M}${b} = ${c}`,
+          hint: `${frac(X, a)} means ${X} ${DIV} ${a}. Undo the ${MINUS} ${b} first.`,
+          steps: [
+            { m: `${frac(X, a)} = ${q}`, n: `Add ${b} to both sides.`, k: 'eq' },
+            { m: `${X} = ${s}`, n: `Multiply both sides by ${a}.`, k: 'eq' }] });
+      }],
+      [1, () => {
+        const a = R(2, 9), s = R(1, 12), b = R(1, 20), c = a * s + b;
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${c} = ${a}${X}${P}${b}`,
+          hint: `It works the same way round. Subtract ${b} from both sides.`,
+          steps: [
+            { m: `${c - b} = ${a}${X}`, n: `Subtract ${b} from both sides.`, k: 'eq' },
+            { m: `${X} = ${s}`, n: `Divide both sides by ${a}.`, k: 'eq' }] });
+      }],
+    ])();
+  }
+
+  // ======================================================================
+  // Night 6: The Theatre. Simplify, expand, factorise.
+  // ======================================================================
+  function collectOne() {
+    const l = pick(LETTERS), X = v(l);
+    for (;;) {
+      const n = chance(0.35) ? 4 : 3, cs = [R(2, 9)];
+      for (let i = 1; i < n; i++) cs.push(R(1, 7) * (chance(0.3) ? -1 : 1));
+      let run = 0, ok = true;
+      for (const c of cs) { run += c; if (run < 1) ok = false; }
+      if (!ok || run < 2 || run > 20) continue;
+      const sum = run;
+      const expr = term(cs[0], X) + cs.slice(1).map((c) => sterm(c, X)).join('');
+      const nums = cs[0] + cs.slice(1).map((c) => (c < 0 ? M : P) + Math.abs(c)).join('');
+      const one = cs.some((c) => Math.abs(c) === 1) ? ` ${X} on its own counts as 1${X}.` : '';
+      return Q({ kind: 'id', unknown: '□', prompt: 'Simplify', label: BOX + ' =', answer: sum,
+        html: `${expr} = ${BOX}${X}`,
+        hint: `They are all ${X} terms, so combine the numbers in front.${one}`,
+        steps: [
+          { m: `${nums} = ${sum}`, n: `Combine the numbers in front of each ${X}.${one}`, k: 'eq' },
+          { m: `${expr} = ${term(sum, X)}`, k: 'id' }] });
+    }
+  }
+
+  function collectTwo() {
+    const [p, q] = two(), Pv = v(p), Qv = v(q);
+    for (;;) {
+      const c1 = R(1, 8), c2 = R(1, 8) * (chance(0.25) ? -1 : 1);
+      const d1 = R(1, 8), d2 = R(1, 8) * (chance(0.25) ? -1 : 1);
+      const C = c1 + c2, Dd = d1 + d2;
+      if (C < 2 || Dd < 2) continue;
+      const expr = term(c1, Pv) + sterm(d1, Qv) + sterm(c2, Pv) + sterm(d2, Qv);
+      const askP = chance(0.5);
+      const rhs = askP ? `${BOX}${Pv}${sterm(Dd, Qv)}` : `${term(C, Pv)}${P}${BOX}${Qv}`;
+      return Q({ kind: 'id', unknown: '□', prompt: 'Simplify', label: BOX + ' =', answer: askP ? C : Dd,
+        html: `${expr} = ${rhs}`,
+        hint: `Collect the ${askP ? Pv : Qv} terms together.`,
+        steps: [
+          { m: `${term(c1, Pv)}${sterm(c2, Pv)} = ${term(C, Pv)}`, n: `Collect the ${Pv} terms.`, k: 'id' },
+          { m: `${term(d1, Qv)}${sterm(d2, Qv)} = ${term(Dd, Qv)}`, n: `Collect the ${Qv} terms.`, k: 'id' },
+          { m: `${expr} = ${term(C, Pv)}${sterm(Dd, Qv)}`, k: 'id' }] });
+    }
+  }
+
+  function expand() {
+    const l = pick(LETTERS), X = v(l), a = R(2, 9), b = R(1, 9), c = R(2, 5), f = R(0, 3);
+    const prompt = 'Expand the bracket', L = BOX + ' =', hint = `Multiply everything inside the bracket by ${a}.`;
+    if (f === 0 || f === 1) {
+      const s = f === 0 ? P : M;
+      return Q({ kind: 'id', unknown: '□', prompt, label: L, answer: a * b, hint,
+        html: `${a}(${X}${s}${b}) = ${a}${X}${s}${BOX}`,
+        steps: [
+          { m: `${a}${T}${X} = ${a}${X}`, n: `Multiply the first term by ${a}.`, k: 'id' },
+          { m: `${a}${T}${b} = ${a * b}`, n: 'Then the second term.', k: 'eq' },
+          { m: `${a}(${X}${s}${b}) = ${a}${X}${s}${a * b}`, k: 'id' }] });
+    }
+    if (f === 2) {
+      return Q({ kind: 'id', unknown: '□', prompt, label: L, answer: a * c, hint,
+        html: `${a}(${c}${X}${P}${b}) = ${BOX}${X}${P}${a * b}`,
+        steps: [
+          { m: `${a}${T}${c}${X} = ${a * c}${X}`, n: `Multiply the first term by ${a}.`, k: 'id' },
+          { m: `${a}${T}${b} = ${a * b}`, n: 'Then the second term.', k: 'eq' },
+          { m: `${a}(${c}${X}${P}${b}) = ${a * c}${X}${P}${a * b}`, k: 'id' }] });
+    }
+    return Q({ kind: 'id', unknown: '□', prompt, label: L, answer: a * b, hint,
+      html: `${a}(${c}${X}${M}${b}) = ${a * c}${X}${M}${BOX}`,
+      steps: [
+        { m: `${a}${T}${c}${X} = ${a * c}${X}`, n: `Multiply the first term by ${a}.`, k: 'id' },
+        { m: `${a}${T}${b} = ${a * b}`, n: 'Then the second term.', k: 'eq' },
+        { m: `${a}(${c}${X}${M}${b}) = ${a * c}${X}${M}${a * b}`, k: 'id' }] });
+  }
+
+  function factorise() {
+    const l = pick(LETTERS), X = v(l), L = BOX + ' =';
+    for (;;) {
+      const f = R(2, 6), c = R(1, 5), b = R(1, 9), form = R(0, 2);
+      if (gcd(c, b) !== 1) continue;
+      if (form === 0) {
+        return Q({ kind: 'id', unknown: '□', prompt: 'Factorise', label: L, answer: b,
+          html: `${f * c}${X}${P}${f * b} = ${f}(${term(c, X)}${P}${BOX})`,
+          hint: `What do you multiply ${f} by to get ${f * b}?`,
+          steps: [
+            { m: `${f}${T}${term(c, X)} = ${f * c}${X}`, n: 'The first part already works.', k: 'id' },
+            { m: `${f}${T}${b} = ${f * b}`, n: `${f} times what makes ${f * b}?`, k: 'eq' },
+            { m: `${f * c}${X}${P}${f * b} = ${f}(${term(c, X)}${P}${b})`, k: 'id' }] });
+      }
+      if (c < 2) continue;
+      const s = form === 2 ? M : P;
+      return Q({ kind: 'id', unknown: '□', prompt: 'Factorise', label: L, answer: f,
+        html: `${f * c}${X}${s}${f * b} = ${BOX}(${c}${X}${s}${b})`,
+        hint: `What times ${c}${X} makes ${f * c}${X}?`,
+        steps: [
+          { m: `${f * c}${D}${c} = ${f}`, n: `${f} ${TIMES} ${c}${X} makes ${f * c}${X}.`, k: 'eq' },
+          { m: `${f}${T}${b} = ${f * b}`, n: 'Check the second term works too.', k: 'eq' },
+          { m: `${f * c}${X}${s}${f * b} = ${f}(${c}${X}${s}${b})`, k: 'id' }] });
+    }
+  }
+
+  function multiplyTerms() {
+    const [p, q] = two(), Pv = v(p), Qv = v(q), a = R(2, 9), c = R(2, 9), f = R(0, 2), L = BOX + ' =';
+    if (f === 0) {
+      return Q({ kind: 'id', unknown: '□', prompt: 'Simplify', label: L, answer: a * c,
+        html: `${a}${T}${c}${Pv} = ${BOX}${Pv}`,
+        hint: 'Multiply the numbers. The letter stays.',
+        steps: [
+          { m: `${a}${T}${c} = ${a * c}`, n: 'Multiply the numbers.', k: 'eq' },
+          { m: `${a}${T}${c}${Pv} = ${a * c}${Pv}`, k: 'id' }] });
+    }
+    if (f === 1) {
+      return Q({ kind: 'id', unknown: '□', prompt: 'Simplify', label: L, answer: a * c,
+        html: `${a}${Pv}${T}${c}${Qv} = ${BOX}${Pv}${Qv}`,
+        hint: 'Multiply the numbers, then put the letters together.',
+        steps: [
+          { m: `${a}${T}${c} = ${a * c}`, n: 'Multiply the numbers, then put the letters together.', k: 'eq' },
+          { m: `${a}${Pv}${T}${c}${Qv} = ${a * c}${Pv}${Qv}`, k: 'id' }] });
+    }
+    return Q({ kind: 'id', unknown: '□', prompt: 'Simplify', label: L, answer: c,
+      html: `${a * c}${Pv}${D}${a} = ${BOX}${Pv}`,
+      hint: 'Divide the number part. The letter stays.',
+      steps: [
+        { m: `${a * c}${D}${a} = ${c}`, n: 'Divide the number part.', k: 'eq' },
+        { m: `${a * c}${Pv}${D}${a} = ${c}${Pv}`, k: 'id' }] });
+  }
+
+  function theatre() {
+    return choose([[3, collectOne], [2, collectTwo], [3, expand], [2, factorise], [1, multiplyTerms]])();
+  }
+
+  // ======================================================================
+  // Night 7: The Arena. Equations with brackets.
+  // ======================================================================
+  function arena() {
+    const l = pick(LETTERS), X = v(l), L = X + ' =', prompt = 'Find ' + X;
+    return choose([
+      [3, () => {
+        const a = R(2, 6), s = R(1, 12), b = R(1, 9), c = a * (s + b);
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${a}(${X}${P}${b}) = ${c}`,
+          hint: `Divide both sides by ${a} first. Or expand the bracket.`,
+          steps: [
+            { m: `${X}${P}${b} = ${s + b}`, n: `Divide both sides by ${a}.`, k: 'eq' },
+            { m: `${X} = ${s}`, n: `Subtract ${b} from both sides.`, k: 'eq' }] });
+      }],
+      [2, () => {
+        const a = R(2, 6), b = R(1, 9), s = R(b + 1, b + 12), c = a * (s - b);
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${a}(${X}${M}${b}) = ${c}`,
+          hint: `Divide both sides by ${a} first. Or expand the bracket.`,
+          steps: [
+            { m: `${X}${M}${b} = ${s - b}`, n: `Divide both sides by ${a}.`, k: 'eq' },
+            { m: `${X} = ${s}`, n: `Add ${b} to both sides.`, k: 'eq' }] });
+      }],
+      [2, () => {
+        const a = R(2, 5), c = R(2, 4), s = R(1, 10), b = R(1, 9), d = a * (c * s + b);
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${a}(${c}${X}${P}${b}) = ${d}`,
+          hint: `Divide both sides by ${a} first. Then it is a two-step equation.`,
+          steps: [
+            { m: `${c}${X}${P}${b} = ${c * s + b}`, n: `Divide both sides by ${a}.`, k: 'eq' },
+            { m: `${c}${X} = ${c * s}`, n: `Subtract ${b} from both sides.`, k: 'eq' },
+            { m: `${X} = ${s}`, n: `Divide both sides by ${c}.`, k: 'eq' }] });
+      }],
+      [2, () => {
+        const a = R(2, 6), q = R(2, 8), b = R(1, Math.min(9, a * q - 1)), s = a * q - b;
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${frac(X + P + b, a)} = ${q}`,
+          hint: `The whole top is divided by ${a}. Multiply both sides by ${a} first.`,
+          steps: [
+            { m: `${X}${P}${b} = ${a * q}`, n: `Multiply both sides by ${a}.`, k: 'eq' },
+            { m: `${X} = ${s}`, n: `Subtract ${b} from both sides.`, k: 'eq' }] });
+      }],
+      [1, () => {
+        const a = R(2, 5), b = R(1, 6), s = R(1, 10), e = R(1, 12), d = a * (s + b) + e;
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${a}(${X}${P}${b})${P}${e} = ${d}`,
+          hint: `Get the bracket on its own first. Subtract ${e} from both sides.`,
+          steps: [
+            { m: `${a}(${X}${P}${b}) = ${d - e}`, n: `Subtract ${e} from both sides.`, k: 'eq' },
+            { m: `${X}${P}${b} = ${s + b}`, n: `Divide both sides by ${a}.`, k: 'eq' },
+            { m: `${X} = ${s}`, n: `Subtract ${b} from both sides.`, k: 'eq' }] });
+      }],
+      [2, () => {
+        const p = R(2, 4), q = R(2, 4), a = R(1, 6), b = R(1, 6), s = R(1, 10), k = p + q, e = p * a + q * b, c = k * s + e;
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${p}(${X}${P}${a})${P}${q}(${X}${P}${b}) = ${c}`,
+          hint: 'Expand both brackets, then collect like terms.',
+          steps: [
+            { m: `${p}${X}${P}${p * a}${P}${q}${X}${P}${q * b} = ${c}`, n: 'Expand both brackets.', k: 'eq' },
+            { m: `${k}${X}${P}${e} = ${c}`, n: 'Collect like terms.', k: 'eq' },
+            { m: `${k}${X} = ${c - e}`, n: `Subtract ${e} from both sides.`, k: 'eq' },
+            { m: `${X} = ${s}`, n: `Divide both sides by ${k}.`, k: 'eq' }] });
+      }],
+    ])();
+  }
+
+  // ======================================================================
+  // Night 8: Festival Main Stage. Letters on both sides.
+  // ======================================================================
+  function bothPlus(l, X) {
+    const c = R(1, 6), k = R(1, 5), a = c + k, s = R(1, 12), b = R(1, 15), d = k * s + b;
+    const steps = [
+      { m: `${term(k, X)}${P}${b} = ${d}`, n: `Subtract ${term(c, X)} from both sides.`, k: 'eq' },
+      { m: `${term(k, X)} = ${d - b}`, n: `Subtract ${b} from both sides.`, k: 'eq' }];
+    if (k > 1) steps.push({ m: `${X} = ${s}`, n: `Divide both sides by ${k}.`, k: 'eq' });
+    return Q({ kind: 'eq', unknown: l, prompt: 'Find ' + X, label: X + ' =', answer: s,
+      html: `${a}${X}${P}${b} = ${term(c, X)}${P}${d}`,
+      hint: `Get the ${X} terms on one side. Subtract ${term(c, X)} from both sides.`, steps });
+  }
+  function bothMinus(l, X) {
+    const c = R(1, 6), k = R(1, 5), a = c + k, s = R(2, 12), b = R(1, Math.min(15, k * s - 1)), d = k * s - b;
+    const steps = [
+      { m: `${term(k, X)}${M}${b} = ${d}`, n: `Subtract ${term(c, X)} from both sides.`, k: 'eq' },
+      { m: `${term(k, X)} = ${d + b}`, n: `Add ${b} to both sides.`, k: 'eq' }];
+    if (k > 1) steps.push({ m: `${X} = ${s}`, n: `Divide both sides by ${k}.`, k: 'eq' });
+    return Q({ kind: 'eq', unknown: l, prompt: 'Find ' + X, label: X + ' =', answer: s,
+      html: `${a}${X}${M}${b} = ${term(c, X)}${P}${d}`,
+      hint: `Get the ${X} terms on one side. Subtract ${term(c, X)} from both sides.`, steps });
+  }
+  function rightBigger(l, X) {
+    const c = R(1, 5), k = R(1, 4), a = c + k, s = R(1, 12), b = R(1, 12), d = k * s + b;
+    return Q({ kind: 'eq', unknown: l, prompt: 'Find ' + X, label: X + ' =', answer: s,
+      html: `${term(c, X)}${P}${d} = ${a}${X}${P}${b}`,
+      hint: `There are more ${X}s on the right. Subtract ${term(c, X)} from both sides.`,
+      steps: [
+        { m: `${d} = ${term(k, X)}${P}${b}`, n: `Subtract ${term(c, X)} from both sides.`, k: 'eq' },
+        { m: `${d - b} = ${term(k, X)}`, n: `Subtract ${b} from both sides.`, k: 'eq' },
+        { m: `${X} = ${s}`, n: k > 1 ? `Divide both sides by ${k}.` : 'Swap the sides round.', k: 'eq' }] });
+  }
+  function bracketBoth(l, X) {
+    const c = R(1, 4), k = R(1, 3), a = c + k, b = R(1, 6), s = R(1, 10), d = k * s + a * b;
+    const steps = [
+      { m: `${a}${X}${P}${a * b} = ${term(c, X)}${P}${d}`, n: 'Expand the bracket.', k: 'eq' },
+      { m: `${term(k, X)}${P}${a * b} = ${d}`, n: `Subtract ${term(c, X)} from both sides.`, k: 'eq' },
+      { m: `${term(k, X)} = ${d - a * b}`, n: `Subtract ${a * b} from both sides.`, k: 'eq' }];
+    if (k > 1) steps.push({ m: `${X} = ${s}`, n: `Divide both sides by ${k}.`, k: 'eq' });
+    return Q({ kind: 'eq', unknown: l, prompt: 'Find ' + X, label: X + ' =', answer: s,
+      html: `${a}(${X}${P}${b}) = ${term(c, X)}${P}${d}`,
+      hint: 'Expand the bracket first. Then get the letters on one side.', steps });
+  }
+  function festival() {
+    const l = pick(LETTERS), X = v(l);
+    return choose([
+      [3, () => bothPlus(l, X)], [2, () => bothMinus(l, X)],
+      [2, () => rightBigger(l, X)], [2, () => bracketBoth(l, X)]])();
+  }
+
+  // ======================================================================
+  // Night 9: The Stadium. Negatives, powers, inequalities, everything.
+  // ======================================================================
+  function negOneStep() {
+    const l = pick(LETTERS), X = v(l), L = X + ' =', prompt = 'Find ' + X, f = R(0, 2);
+    if (f === 0) {
+      const s = -R(1, 12), a = R(2, 15), c = s + a;
+      return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+        html: `${X}${P}${a} = ${num(c)}`,
+        hint: `Subtract ${a} from both sides. The answer can be below zero.`,
+        steps: [
+          { m: `${X} = ${num(c)}${M}${a}`, n: `Subtract ${a} from both sides.`, k: 'eq' },
+          { m: `${X} = ${num(s)}`, n: c >= 0 ? `Counting back ${a} from ${c} takes you below zero.` : 'Count back further below zero.', k: 'eq' }] });
+    }
+    if (f === 1) {
+      const c = -R(1, 12), a = R(2, 12), s = c + a;
+      return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+        html: `${X}${M}${a} = ${num(c)}`,
+        hint: `Add ${a} to both sides.`,
+        steps: [
+          { m: `${X} = ${num(c)}${P}${a}`, n: `Add ${a} to both sides.`, k: 'eq' },
+          { m: `${X} = ${num(s)}`, n: `Count up ${a} from ${num(c)}.`, k: 'eq' }] });
+    }
+    const a = R(2, 9), s = -R(2, 10), c = a * s;
+    return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+      html: `${a}${X} = ${num(c)}`,
+      hint: `Divide both sides by ${a}. A negative divided by a positive is negative.`,
+      steps: [
+        { m: `${X} = ${num(c)}${D}${a}`, n: `Divide both sides by ${a}.`, k: 'eq' },
+        { m: `${X} = ${num(s)}`, n: 'A negative divided by a positive is negative.', k: 'eq' }] });
+  }
+
+  function negTwoStep() {
+    const l = pick(LETTERS), X = v(l), a = R(2, 6), s = -R(1, 9), b = R(1, 30), c = a * s + b;
+    return Q({ kind: 'eq', unknown: l, prompt: 'Find ' + X, label: X + ' =', answer: s,
+      html: `${a}${X}${P}${b} = ${num(c)}`,
+      hint: `Subtract ${b} from both sides, then divide by ${a}. Watch out for a negative.`,
+      steps: [
+        { m: `${a}${X} = ${num(c - b)}`, n: `Subtract ${b} from both sides.`, k: 'eq' },
+        { m: `${X} = ${num(s)}`, n: `Divide both sides by ${a}.`, k: 'eq' }] });
+  }
+
+  function negSub() {
+    const l = pick(LETTERS), X = v(l), a = R(2, 6), val = -R(1, 8), b = R(1, 20), ans = a * val + b;
+    return Q({ kind: 'eval', prompt: 'Work it out', given: `If ${X} = ${num(val)}`, label: '=', answer: ans,
+      html: `${a}${X}${P}${b}`,
+      hint: `${a}${X} means ${a} ${TIMES} ${X}. A positive times a negative is negative.`,
+      steps: [
+        { m: `${a}${T}(${num(val)})${P}${b}`, n: `Swap ${X} for ${num(val)}.`, k: 'val' },
+        { m: `${num(a * val)}${P}${b}`, n: `${a} ${TIMES} ${num(val)} = ${num(a * val)}`, k: 'val' },
+        { m: num(ans), k: 'val' }] });
+  }
+
+  function powers() {
+    const l = pick(LETTERS), X = v(l), f = R(0, 2);
+    if (f === 0) {
+      const val = R(2, 9);
+      let b = R(1, 20) * (chance(0.3) ? -1 : 1);
+      if (val * val + b <= 0) b = Math.abs(b);
+      const ans = val * val + b;
+      return Q({ kind: 'eval', prompt: 'Work it out', given: `If ${X} = ${val}`, label: '=', answer: ans,
+        html: sq(X) + sgn(b),
+        hint: `${sq(X)} means ${X} ${TIMES} ${X}, not 2 ${TIMES} ${X}.`,
+        steps: [
+          { m: `${val}${T}${val}${sgn(b)}`, n: `${sq(X)} means ${X} ${TIMES} ${X}.`, k: 'val' },
+          { m: `${val * val}${sgn(b)}`, k: 'val' },
+          { m: String(ans), k: 'val' }] });
+    }
+    if (f === 1) {
+      const val = R(2, 6), c = R(2, 5), ans = c * val * val;
+      return Q({ kind: 'eval', prompt: 'Work it out', given: `If ${X} = ${val}`, label: '=', answer: ans,
+        html: c + sq(X),
+        hint: `Square ${X} first, then times by ${c}.`,
+        steps: [
+          { m: `${c}${T}${val}${T}${val}`, n: `Square ${X} first, then times by ${c}.`, k: 'val' },
+          { m: `${c}${T}${val * val}`, k: 'val' },
+          { m: String(ans), k: 'val' }] });
+    }
+    const val = -R(2, 9), b = R(1, 15), ans = val * val + b;
+    return Q({ kind: 'eval', prompt: 'Work it out', given: `If ${X} = ${num(val)}`, label: '=', answer: ans,
+      html: sq(X) + P + b,
+      hint: 'A negative times a negative is positive.',
+      steps: [
+        { m: `(${num(val)})${T}(${num(val)})${P}${b}`, n: `${sq(X)} means ${X} ${TIMES} ${X}.`, k: 'val' },
+        { m: `${val * val}${P}${b}`, n: 'A negative times a negative is positive.', k: 'val' },
+        { m: String(ans), k: 'val' }] });
+  }
+
+  function inequality() {
+    const l = pick(LETTERS), X = v(l), a = R(2, 5), k = R(2, 9), r = R(0, a - 1);
+    if (chance(0.5)) {
+      const b = R(1, 12), c = a * k + r + b, ans = r === 0 ? k - 1 : k;
+      return Q({ kind: 'ineq-max', unknown: l, prompt: `Biggest whole number ${X} that makes this true`, label: X + ' =', answer: ans,
+        html: `${a}${X}${P}${b} < ${c}`,
+        hint: 'Solve it like an equation, then pick the biggest whole number that still fits.',
+        steps: [
+          { m: `${a}${X} < ${c - b}`, n: `Subtract ${b} from both sides.` },
+          r === 0
+            ? { m: `${X} < ${k}`, n: `Divide both sides by ${a}.` }
+            : { m: `${c - b}${D}${a} = ${k} r ${r}`, n: `${a} ${TIMES} ${k} = ${a * k} fits. ${a} ${TIMES} ${k + 1} = ${a * (k + 1)} is too big.` },
+          { m: `${X} = ${ans}`, n: r === 0 ? `${X} must be less than ${k}, so the biggest whole number is ${k - 1}.` : `So the biggest whole number is ${k}.`, k: 'eq' }] });
+    }
+    const b = R(1, Math.min(12, a * k + r - 1)), c = a * k + r - b, ans = k + 1;
+    return Q({ kind: 'ineq-min', unknown: l, prompt: `Smallest whole number ${X} that makes this true`, label: X + ' =', answer: ans,
+      html: `${a}${X}${M}${b} > ${c}`,
+      hint: 'Solve it like an equation, then pick the smallest whole number that is bigger.',
+      steps: [
+        { m: `${a}${X} > ${c + b}`, n: `Add ${b} to both sides.` },
+        r === 0
+          ? { m: `${X} > ${k}`, n: `Divide both sides by ${a}.` }
+          : { m: `${c + b}${D}${a} = ${k} r ${r}`, n: `${a} ${TIMES} ${k} = ${a * k} is too small.` },
+        { m: `${X} = ${ans}`, n: `The smallest whole number that works is ${ans}.`, k: 'eq' }] });
+  }
+
+  function bothNeg() {
+    const l = pick(LETTERS), X = v(l), c = R(1, 5), k = R(1, 4), a = c + k, s = -R(1, 8), b = R(1, 20), d = k * s + b;
+    const steps = [
+      { m: `${term(k, X)}${P}${b} = ${num(d)}`, n: `Subtract ${term(c, X)} from both sides.`, k: 'eq' },
+      { m: `${term(k, X)} = ${num(d - b)}`, n: `Subtract ${b} from both sides.`, k: 'eq' }];
+    if (k > 1) steps.push({ m: `${X} = ${num(s)}`, n: `Divide both sides by ${k}.`, k: 'eq' });
+    return Q({ kind: 'eq', unknown: l, prompt: 'Find ' + X, label: X + ' =', answer: s,
+      html: `${a}${X}${P}${b} = ${term(c, X)}${d === 0 ? '' : sgn(d)}`,
+      hint: `Get the ${X} terms on one side first. The answer is below zero.`, steps });
+  }
+
+  function stadium() {
+    return choose([
+      [2, negOneStep], [2, negTwoStep], [1.5, negSub], [1.5, powers], [1.5, inequality], [1.5, bothNeg],
+      [1, arena], [1, festival], [1, theatre], [0.5, pairProduct]])();
+  }
+
+  // ======================================================================
+  // The tour
+  // ======================================================================
+  const VENUES = [
+    { id: 'bedroom', name: 'The Dungeon', skill: 'Missing numbers', years: 'Year 3-5', unlockYear: 5,
+      secs: 60, picks: [6, 11, 16], gen: bedroom,
+      blurb: 'Warm up your fingers. Find the number hiding in the box.',
+      example: `${BOX}${P}7 = 15` },
+    { id: 'garage', name: 'The Armoury', skill: 'Letters for numbers', years: 'Year 6', unlockYear: 6,
+      secs: 60, picks: [5, 10, 14], gen: garage,
+      blurb: 'The same puzzles with a new look. A letter stands for the missing number.',
+      example: `${v('n')}${P}8 = 15` },
+    { id: 'hall', name: 'The Great Hall', skill: 'Formulae and two-number puzzles', years: 'Year 6', unlockYear: 6,
+      secs: 90, picks: [4, 8, 12], gen: village,
+      blurb: 'Swap letters for numbers, use band formulae and crack two-number puzzles.',
+      example: `3${v('a')}${P}2 when ${v('a')} = 4` },
+    { id: 'pub', name: 'The Spiral Stair', skill: 'Sequences and nth term rules', years: 'Year 6-8', unlockYear: 7,
+      secs: 90, picks: [4, 8, 12], gen: pub,
+      blurb: 'Spot the jump, find the missing numbers and use nth term rules.',
+      example: `5, 9, 13, 17, ${BOX}` },
+    { id: 'club', name: 'The Alchemist\'s Lab', skill: 'Two-step equations', years: 'Year 6-8', unlockYear: 7,
+      secs: 90, picks: [4, 8, 12], gen: club,
+      blurb: 'Undo two things to get the letter on its own.',
+      example: `3${v('x')}${P}5 = 20` },
+    { id: 'theatre', name: 'The Library', skill: 'Simplify, expand and factorise', years: 'Year 7', unlockYear: 7,
+      secs: 90, picks: [5, 9, 13], gen: theatre,
+      blurb: 'Collect like terms, multiply out brackets and put them back in.',
+      example: `3(${v('x')}${P}4) = 3${v('x')}${P}${BOX}` },
+    { id: 'arena', name: 'The Clock Tower', skill: 'Equations with brackets', years: 'Year 8', unlockYear: 8,
+      secs: 120, picks: [4, 7, 10], gen: arena,
+      blurb: 'Brackets, fractions and longer equations.',
+      example: `3(${v('x')}${P}2) = 21` },
+    { id: 'festival', name: 'The Hall of Mirrors', skill: 'Letters on both sides', years: 'Year 8-9', unlockYear: 8,
+      secs: 120, picks: [3, 6, 9], gen: festival,
+      blurb: 'Get all the letters on one side, then solve.',
+      example: `5${v('x')}${P}3 = 2${v('x')}${P}15` },
+    { id: 'stadium', name: 'The Shadow Keep', skill: 'Negatives, powers and the lot', years: 'Year 9', unlockYear: 9,
+      secs: 120, picks: [4, 8, 12], gen: stadium, negatives: true,
+      blurb: 'The big one. Some answers are below zero, so you will need the minus key.',
+      example: `2${v('x')}${P}11 = 3` },
+  ];
+
+  function generate(index, recent) {
+    const vn = VENUES[index];
+    let q = vn.gen();
+    for (let i = 0; i < 12 && recent && recent.indexOf(q.key) !== -1; i++) q = vn.gen();
+    return q;
+  }
+
+  const API = { VENUES, generate, seed, unseed, num, v, BOX, MINUS, TIMES };
+  if (typeof module !== 'undefined' && module.exports) module.exports = API;
+  else root.RTUQ = API;
+})(typeof window !== 'undefined' ? window : this);
+
+</script>
+<script>
+(function () {
+  'use strict';
+  const QB = window.RTUQ, VEN = QB.VENUES, num = QB.num;
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
+  const pickR = (a) => a[Math.floor(Math.random() * a.length)];
+  const fmt = (n) => Number(n).toLocaleString('en-GB');
+  const clock = (s) => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+  const reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const JUNCTIONS = 8;
+  let uid = 0;
+
+  // ------------------------------------------------------------ the world
+  const FLOORS = [
+    { name: 'The Dungeon', blurb: 'Dripping stone and rusted chains. Find the number hiding in each box.', pal: ['#1e2520', '#34413a', '#4d5b51', '#8a9b8d'] },
+    { name: 'The Armoury', blurb: 'Suits of armour line the halls. Now a letter stands for the missing number.', pal: ['#1f222a', '#363d4b', '#56606f', '#a3adbf'] },
+    { name: 'The Great Hall', blurb: 'Banners and long feasting tables. Swap letters for numbers and crack two-number riddles.', pal: ['#281d20', '#45313a', '#6f505a', '#b38d96'] },
+    { name: 'The Spiral Stair', blurb: 'Steps that wind up into the dark. Spot the pattern and use nth term rules.', pal: ['#29241b', '#4a412e', '#786848', '#bba277'] },
+    { name: "The Alchemist's Lab", blurb: 'Bubbling green flasks. Undo two steps to get the letter on its own.', pal: ['#1a2627', '#2c4547', '#476d6e', '#86c1bc'] },
+    { name: 'The Library', blurb: 'Shelves of whispering spellbooks. Collect like terms, open brackets and close them again.', pal: ['#271f18', '#45372a', '#6f5741', '#b39371'] },
+    { name: 'The Clock Tower', blurb: 'Great brass gears tick overhead. Equations with brackets and fractions.', pal: ['#252218', '#433d29', '#71663f', '#c4b476'] },
+    { name: 'The Hall of Mirrors', blurb: 'Every letter has a reflection. Get them all on one side, then solve.', pal: ['#1c2135', '#30395c', '#53628c', '#aebdf0'] },
+    { name: 'The Shadow Keep', blurb: "The Shadow's own lair, where some answers fall below zero.", pal: ['#1a1424', '#2e2440', '#4e3e6c', '#9a86d6'] },
+  ];
+  const ELEMENTS = {
+    fire: { name: 'Fire', color: '#ff7a3c', glow: '#ffb347', fx: 'embers', spell: { id: 'fireball', name: 'Fireball', short: 'Fireball', desc: 'Blasts the Shadow 5 steps back.', charges: 1 } },
+    frost: { name: 'Frost', color: '#7fd8ff', glow: '#d4f4ff', fx: 'frost', spell: { id: 'freeze', name: 'Frost Lock', short: 'Freeze', desc: 'Freezes the Shadow solid for 12 seconds.', charges: 1 } },
+    storm: { name: 'Storm', color: '#c3a6ff', glow: '#f1e6ff', fx: 'starfall', spell: { id: 'stride', name: 'Storm Stride', short: 'Stride', desc: 'A bolt of lightning carries you straight past this door.', charges: 1 } },
+    nature: { name: 'Nature', color: '#7be07b', glow: '#d8ffb0', fx: 'fireflies', spell: { id: 'roots', name: 'Rootbind', short: 'Roots', desc: 'Roots wrap the Shadow and slow it to a crawl for 20 seconds.', charges: 1 } },
+  };
+  const GIFTS = {
+    brave: { name: 'Brave', desc: 'Starts each floor with a bigger lead on the Shadow.' },
+    clever: { name: 'Clever', desc: "Extra Owl's Whispers and Seeing Stones on every floor." },
+    swift: { name: 'Swift', desc: 'Runs faster, and the Shadow is a little slower.' },
+  };
+  const SPELLS = [
+    { id: 'whisper', name: "Owl's Whisper", short: 'Whisper', desc: 'An owl whispers a clue for this riddle.', charges: 3, need: 0 },
+    { id: 'seeing', name: 'Seeing Stone', short: 'Stone', desc: 'One wrong door crumbles away.', charges: 2, need: 1 },
+    { id: 'scroll', name: 'Scroll of Steps', short: 'Steps', desc: 'Stops time, shows the method step by step, then gives you a new riddle.', charges: 1, need: 2 },
+    { id: 'sunburst', name: 'Sunburst', short: 'Sunburst', desc: 'A flash of light drives the Shadow 4 steps back.', charges: 1, need: 3 },
+    { id: 'shield', name: 'Stone Shield', short: 'Shield', desc: 'Your next wrong door costs you nothing.', charges: 1, need: 5 },
+  ];
+  const ICON = {
+    whisper: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3c4.4 0 7 3.2 7 7.6 0 3.2-1.6 5.9-3.6 7.6L17 21l-5-1.6L7 21l1.6-2.8C6.6 16.5 5 13.8 5 10.6 5 6.2 7.6 3 12 3Zm-3 6.2a1.7 1.7 0 1 0 0 3.4 1.7 1.7 0 0 0 0-3.4Zm6 0a1.7 1.7 0 1 0 0 3.4 1.7 1.7 0 0 0 0-3.4ZM12 13l-1.2 1.6h2.4L12 13ZM6 2.5l2.6 2.8L6 5.6v-3.1Zm12 0v3.1l-2.6-.3L18 2.5Z"/></svg>',
+    seeing: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="11" r="7.5" fill="currentColor" opacity=".35"/><circle cx="12" cy="11" r="7.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 8.5a3.5 3.5 0 0 1 3-1.5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M7 19h10l1 3H6l1-3Z" fill="currentColor"/></svg>',
+    scroll: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h11a2 2 0 0 1 0 4h-1v10a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-1h11"/><path d="M7 4a2 2 0 0 0-2 2v11M9 10h5M9 13.5h5"/></svg>',
+    sunburst: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></g></svg>',
+    shield: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3Zm0 4.5 1.4 3h3.2l-2.6 2.1 1 3.3L12 13l-3 1.9 1-3.3-2.6-2.1h3.2l1.4-3Z"/></svg>',
+    fireball: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 2c.6 3.3 4.5 5 4.5 10a6.5 6.5 0 0 1-13 0c0-3 1.6-4.6 3-6.2.2 2 1.3 3.4 2.6 3.8C10.3 6 13.4 4.6 14 2Z"/></svg>',
+    freeze: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M3.3 7l17.4 10M3.3 17 20.7 7M9 4l3 2 3-2M9 20l3-2 3 2"/></svg>',
+    stride: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 2 5 13.5h6L9.5 22 19 9.5h-6.2L13.5 2Z"/></svg>',
+    roots: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 22V10M12 14c-3 0-5-2-6-5M12 12c3 0 5-2 6-6M12 17c-2 1-4 1-6 0M12 18c2 1.5 4 1.5 6 .5"/><path d="M12 10c0-3 1.5-5.5 4-7" /></svg>',
+    lock: '<svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+  };
+  const EFFECTS = [
+    { id: 'sparks', name: 'Golden sparks', stars: 0, colors: ['#ffc46b', '#ffe3a3', '#ff9f43'], shape: 'dot' },
+    { id: 'starfall', name: 'Starfall', stars: 3, colors: ['#ffffff', '#ffe58a', '#c9c2ff'], shape: 'star' },
+    { id: 'frost', name: 'Frost', stars: 6, colors: ['#bff4ff', '#7fd8ff', '#ffffff'], shape: 'diamond' },
+    { id: 'embers', name: 'Dragon embers', stars: 10, colors: ['#ff7a5c', '#ffb347', '#ffd36b'], shape: 'ember' },
+    { id: 'fireflies', name: 'Fireflies', stars: 15, colors: ['#c8ff7a', '#8fff9c', '#f3ff9e'], shape: 'firefly' },
+    { id: 'rainbow', name: 'Rainbow comet', stars: 21, colors: null, shape: 'star' },
+  ];
+  const WARDROBE = {
+    robe: { label: 'Robes', items: [
+      { id: 'midnight', name: 'Midnight', cost: 0, c1: '#3d3a9e', c2: '#25226b', trim: '#f2c46d' },
+      { id: 'crimson', name: 'Crimson', cost: 20, c1: '#a3263b', c2: '#5e1322', trim: '#ffd36b' },
+      { id: 'forest', name: 'Forest', cost: 30, c1: '#2f7a4f', c2: '#174029', trim: '#e9d78c' },
+      { id: 'sky', name: 'Sky', cost: 40, c1: '#3a8fd6', c2: '#1d4f86', trim: '#ffffff' },
+      { id: 'sunset', name: 'Sunset', cost: 60, c1: '#e8743b', c2: '#933617', trim: '#ffe3a3' },
+      { id: 'starlight', name: 'Starlight', cost: 120, c1: '#1b1a45', c2: '#0c0b26', trim: '#c9c2ff', stars: true },
+    ] },
+    hat: { label: 'Hats', items: [
+      { id: 'pointed', name: 'Pointed hat', cost: 0 }, { id: 'brim', name: 'Wide brim', cost: 25 },
+      { id: 'hood', name: 'Hood', cost: 35 }, { id: 'circlet', name: 'Silver circlet', cost: 50 }, { id: 'crown', name: 'Star crown', cost: 80 },
+    ] },
+    staff: { label: 'Staffs', items: [
+      { id: 'oak', name: 'Oak staff', cost: 0 }, { id: 'crystal', name: 'Crystal wand', cost: 30 },
+      { id: 'moon', name: 'Moon staff', cost: 60 }, { id: 'comet', name: 'Comet staff', cost: 100 },
+    ] },
+    pet: { label: 'Familiars', items: [
+      { id: 'none', name: 'No familiar', cost: 0 }, { id: 'toad', name: 'Toad', cost: 30 }, { id: 'owl', name: 'Owl', cost: 40 },
+      { id: 'cat', name: 'Black cat', cost: 50 }, { id: 'dragon', name: 'Little dragon', cost: 150 },
+    ] },
+  };
+  const SKINS = ['#f7d6bb', '#e8b48f', '#c58a5f', '#8f5a37', '#5c3a24'];
+  const HAIRS = [['short', 'Short'], ['long', 'Long'], ['braid', 'Braid'], ['curly', 'Curly'], ['bald', 'None']];
+  const HAIRCOLS = ['#2a1d16', '#6b4022', '#b5522b', '#e3c26f', '#d9d6e6', '#4f7bff'];
+  const EYES = [['#5b3a22', 'Brown'], ['#3f8f5a', 'Green'], ['#3a7fd0', 'Blue'], ['#8a4fd6', 'Violet'], ['#d6a12a', 'Gold']];
+  const YEARS = [[5, 'Y5 or below'], [6, 'Y6'], [7, 'Y7'], [8, 'Y8'], [9, 'Y9+']];
+  const FIRST = ['Morwen', 'Elric', 'Isolde', 'Caspian', 'Wren', 'Thorne', 'Ottoline', 'Bram', 'Sable', 'Rowan', 'Juniper', 'Fenwick', 'Ysolda', 'Corin'];
+  const TITLE = ['the Bright', 'of the Seventh Tower', 'the Curious', 'Starweaver', 'the Unafraid', 'of the Silver Lamp', 'Riddlebreaker', 'the Quick', 'Stormcaller', 'of Hollow Hill'];
+  const randomName = () => pickR(FIRST) + ' ' + pickR(TITLE);
+  const STAR_PATH = 'M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7L10 1.5Z';
+  const starSVG = (on, i) => `<svg class="star${on ? ' on' : ''}" viewBox="0 0 20 20" aria-hidden="true" style="animation-delay:${(i || 0) * 220 + 350}ms"><path d="${STAR_PATH}"/></svg>`;
+  const starsRow = (n) => `<span class="stars" role="img" aria-label="${n} of 3 stars">${[0, 1, 2].map((i) => starSVG(i < n, i)).join('')}</span>`;
+  const GEM = '<svg class="gem" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3h10l4 5-9 10L1 8l4-5Z" fill="currentColor"/></svg>';
+
+  // ------------------------------------------------------------ save
+  const KEY = 'castle-of-unknowns/v2';
+  const blank = () => ({ name: '', look: { skin: 0, hair: 'short', hairCol: 1, eyes: 0 }, element: 'fire', gift: 'brave', year: 6, gems: 0, floors: {},
+    owned: { robe: ['midnight'], hat: ['pointed'], staff: ['oak'], pet: ['none'] }, wear: { robe: 'midnight', hat: 'pointed', staff: 'oak', pet: 'none' }, effect: '', sound: true, started: false });
+  let save = blank();
+  function load() { try { const r = localStorage.getItem(KEY); if (r) { const s = JSON.parse(r), b = blank(); save = Object.assign(b, s); ['look', 'owned', 'wear'].forEach((k) => { save[k] = Object.assign(blank()[k], s[k] || {}); }); } } catch (e) { /* play without saving */ } }
+  function persist() { try { localStorage.setItem(KEY, JSON.stringify(save)); } catch (e) { /* ignore */ } }
+  const fstat = (i) => save.floors[VEN[i].id] || { stars: 0, clears: 0, best: 0 };
+  const cleared = () => VEN.filter((v) => (save.floors[v.id] || {}).clears > 0).length;
+  const totalStars = () => VEN.reduce((s, v) => s + ((save.floors[v.id] || {}).stars || 0), 0);
+  const isOpen = (i) => i === 0 || VEN[i].unlockYear <= save.year || fstat(i - 1).clears > 0;
+  const spellOpen = (sp) => cleared() >= sp.need;
+  const el = () => ELEMENTS[save.element] || ELEMENTS.fire;
+  const fxOpen = (fx) => totalStars() >= fx.stars || fx.id === el().fx;
+  const effectNow = () => EFFECTS.find((e) => e.id === (save.effect || el().fx)) || EFFECTS[0];
+  const item = (cat, id) => WARDROBE[cat].items.find((x) => x.id === id) || WARDROBE[cat].items[0];
+  const allSpells = () => [Object.assign({ sig: true, need: 0 }, el().spell)].concat(SPELLS);
+  function chargesFor(sp) { if (!sp.sig && !spellOpen(sp)) return 0; let c = sp.charges; if (save.gift === 'clever' && (sp.id === 'whisper' || sp.id === 'seeing')) c += sp.id === 'whisper' ? 2 : 1; return c; }
+
+  // ------------------------------------------------------------ the sorcerer
+  function sorcererSVG(wear, look, element) {
+    const id = 's' + (++uid), robe = item('robe', wear.robe), E = ELEMENTS[element] || ELEMENTS.fire, skin = SKINS[look.skin] || SKINS[0];
+    const hairC = HAIRCOLS[look.hairCol] || HAIRCOLS[0], eye = (EYES[look.eyes] || EYES[0])[0], ink = '#2b2118';
+    const hatOn = wear.hat !== 'circlet', hood = wear.hat === 'hood';
+    const defs = `<defs>
+      <radialGradient id="${id}a" cx="50%" cy="45%" r="55%"><stop offset="0" stop-color="${E.color}" stop-opacity=".45"/><stop offset="1" stop-color="${E.color}" stop-opacity="0"/></radialGradient>
+      <linearGradient id="${id}r" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${robe.c1}"/><stop offset="1" stop-color="${robe.c2}"/></linearGradient>
+      <radialGradient id="${id}o" cx="40%" cy="35%" r="65%"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="${E.glow}"/><stop offset="1" stop-color="${E.color}"/></radialGradient>
+      <radialGradient id="${id}f" cx="45%" cy="40%" r="60%"><stop offset="0" stop-color="#fff" stop-opacity=".25"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+    </defs>`;
+    const orb = (x, y, r) => `<circle cx="${x}" cy="${y}" r="${r * 2.4}" fill="${E.color}" opacity=".22"/><circle cx="${x}" cy="${y}" r="${r}" fill="url(#${id}o)"/>`;
+    let staff = '';
+    if (wear.staff === 'oak') staff = `<path d="M110 60 L118 166" stroke="#6e4528" stroke-width="6" stroke-linecap="round"/><path d="M110 62 C100 52 104 38 114 40 C122 42 120 54 112 54" stroke="#6e4528" stroke-width="5" fill="none" stroke-linecap="round"/>${orb(112, 47, 4.5)}`;
+    if (wear.staff === 'crystal') staff = `<path d="M112 70 L116 150" stroke="#e8e0ff" stroke-width="4" stroke-linecap="round"/><path d="M111 38 L120 54 L111 72 L102 54 Z" fill="${E.glow}" stroke="#fff" stroke-width="1.5" opacity=".9"/>${orb(111, 55, 3.5)}`;
+    if (wear.staff === 'moon') staff = `<path d="M110 62 L118 166" stroke="#c9c2ff" stroke-width="5" stroke-linecap="round"/><path d="M120 38a14 14 0 1 0 0 24 11 11 0 1 1 0-24Z" fill="#ffe58a"/>${orb(110, 50, 3)}`;
+    if (wear.staff === 'comet') staff = `<path d="M110 62 L118 166" stroke="#ff9f43" stroke-width="5" stroke-linecap="round"/><path d="M96 70 Q104 58 110 52" stroke="${E.color}" stroke-width="6" fill="none" stroke-linecap="round" opacity=".6"/><path transform="translate(101 36) scale(1.05)" d="${STAR_PATH}" fill="#ffd36b" stroke="#fff3c4" stroke-width="1"/>`;
+    const pattern = robe.stars ? `<g fill="#e9e3ff">${[[56, 100], [78, 112], [62, 134], [88, 142], [48, 152], [72, 154], [92, 124]].map(([x, y]) => `<path transform="translate(${x} ${y}) scale(.3)" d="${STAR_PATH}"/>`).join('')}</g>` : '';
+    const emblem = { fire: `<path d="M70 86c.5 2.6 4 3.8 4 7.6a4 4 0 0 1-8 0c0-2 1-3 2-4 .2 1.3.8 2 1.6 2.3-.4-2 .2-4 .4-5.9Z" fill="${E.color}"/>`,
+      frost: `<path d="M70 85v14M64 88.5l12 7M64 95.5l12-7" stroke="${E.color}" stroke-width="2" stroke-linecap="round"/>`,
+      storm: `<path d="M71.5 84 66 93h4l-1.5 7 6.5-9.5h-4l.5-6.5Z" fill="${E.color}"/>`,
+      nature: `<path d="M70 99c-6-2-7-9-2-14 1 4 4 5 5 9 .5-3 2-5 4-6 1 6-2 10-7 11Z" fill="${E.color}"/>` }[element] || '';
+    const hairBack = { long: `<path d="M50 52 C48 80 52 96 58 104 L82 104 C88 96 92 80 90 52 Z" fill="${hairC}"/>`, braid: `<path d="M84 60 C92 74 90 92 86 104" stroke="${hairC}" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="6 2"/><circle cx="86" cy="106" r="3.5" fill="${E.color}"/>`, curly: `<g fill="${hairC}">${[[50, 54], [48, 64], [52, 73], [90, 54], [92, 64], [88, 73]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="7"/>`).join('')}</g>` }[look.hair] || '';
+    const hairFront = look.hair === 'bald' ? '' : look.hair === 'curly'
+      ? `<g fill="${hairC}">${[[56, 42], [64, 38], [72, 37], [80, 40], [86, 46], [54, 50]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="7"/>`).join('')}</g>`
+      : `<path d="M52 52 C52 36 62 32 70 32 C82 32 90 40 89 54 C84 46 76 42 70 44 C64 46 58 46 52 52 Z" fill="${hairC}"/>`;
+    let hat = '';
+    const hc = robe.c2;
+    if (wear.hat === 'pointed') hat = `<path d="M46 44 C55 30 66 12 86 0 C84 16 88 32 95 44 Z" fill="${hc}"/><path d="M86 0 C92 2 97 8 98 14" stroke="${hc}" stroke-width="5" stroke-linecap="round" fill="none"/><ellipse cx="70" cy="45" rx="32" ry="6.5" fill="${hc}"/><path d="M51 40 Q70 35 90 40 L91 44 Q70 39 50 44 Z" fill="${robe.trim}"/><path transform="translate(73 18) scale(.38)" d="${STAR_PATH}" fill="${E.glow}"/>`;
+    if (wear.hat === 'brim') hat = `<path d="M54 42 C58 30 62 18 76 10 C78 22 82 32 87 42 Z" fill="${hc}"/><ellipse cx="70" cy="43" rx="44" ry="8" fill="${hc}"/><path d="M56 38 Q70 34 85 38 L86 41 Q70 37 55 41 Z" fill="${robe.trim}"/>`;
+    if (wear.hat === 'hood') hat = `<path d="M43 76 C34 28 106 28 97 76 C93 54 47 54 43 76 Z" fill="${hc}"/><path d="M58 30 C62 16 74 10 82 12 C76 17 74 24 76 30 Z" fill="${hc}"/><path d="M47 74 C46 60 52 52 60 50" stroke="${robe.trim}" stroke-width="2" fill="none" opacity=".7"/>`;
+    if (wear.hat === 'circlet') hat = `<path d="M52 44 Q70 38 88 44" stroke="#dfe3ee" stroke-width="3" fill="none"/><path d="M70 37 l3 5 -3 4 -3 -4 Z" fill="${E.color}" stroke="#fff" stroke-width=".8"/>`;
+    if (wear.hat === 'crown') hat = `<path d="M51 43 L53 22 L62 33 L70 15 L78 33 L87 22 L89 43 Z" fill="#f2c46d" stroke="#b9862f" stroke-width="1.5" stroke-linejoin="round"/><circle cx="70" cy="35" r="3.2" fill="${E.color}"/><circle cx="59" cy="38" r="2" fill="#62e8c6"/><circle cx="81" cy="38" r="2" fill="#62e8c6"/>`;
+    let pet = '';
+    if (wear.pet === 'toad') pet = `<g transform="translate(4 134)"><ellipse cx="18" cy="22" rx="17" ry="11" fill="#4f9a3c"/><ellipse cx="18" cy="25" rx="11" ry="6" fill="#9bd47c"/><circle cx="9" cy="12" r="6" fill="#5fb049"/><circle cx="27" cy="12" r="6" fill="#5fb049"/><circle cx="9" cy="12" r="2.6" fill="${ink}"/><circle cx="27" cy="12" r="2.6" fill="${ink}"/></g>`;
+    if (wear.pet === 'owl') pet = `<g transform="translate(2 118)"><ellipse cx="18" cy="28" rx="15" ry="19" fill="#9a6b42"/><path d="M5 14 L9 4 L14 12 M31 14 L27 4 L22 12" fill="#9a6b42"/><ellipse cx="18" cy="34" rx="9" ry="11" fill="#d8b88d"/><circle cx="12" cy="22" r="6" fill="#f6e7c8"/><circle cx="24" cy="22" r="6" fill="#f6e7c8"/><circle cx="12" cy="22" r="3" fill="${ink}"/><circle cx="24" cy="22" r="3" fill="${ink}"/><path d="M16 27 L18 31 L20 27 Z" fill="#ffc46b"/></g>`;
+    if (wear.pet === 'cat') pet = `<g transform="translate(0 122)"><path d="M30 40 C40 36 44 26 38 20" stroke="#1d1a24" stroke-width="5" fill="none" stroke-linecap="round"/><ellipse cx="18" cy="32" rx="14" ry="12" fill="#1d1a24"/><circle cx="18" cy="16" r="10" fill="#1d1a24"/><path d="M9 10 L10 1 L16 8 Z M27 10 L26 1 L20 8 Z" fill="#1d1a24"/><circle cx="14" cy="16" r="2.4" fill="#ffd36b"/><circle cx="22" cy="16" r="2.4" fill="#ffd36b"/></g>`;
+    if (wear.pet === 'dragon') pet = `<g transform="translate(-2 116)"><path d="M10 22 L-2 4 L16 13 Z" fill="#5a3fc0"/><ellipse cx="20" cy="32" rx="15" ry="12" fill="#8a6bff"/><ellipse cx="20" cy="35" rx="9" ry="6" fill="#c8b8ff"/><circle cx="24" cy="16" r="9" fill="#8a6bff"/><path d="M19 9 L17 2 L23 7 M28 9 L30 2 L25 7" fill="#ffc46b"/><circle cx="27" cy="15" r="2" fill="${ink}"/><path d="M32 19 Q38 19 40 15" stroke="#ff9f43" stroke-width="2.5" fill="none" stroke-linecap="round"/></g>`;
+    return `<svg viewBox="0 0 140 170" role="img" aria-label="Your sorcerer">${defs}
+      <ellipse cx="70" cy="96" rx="64" ry="72" fill="url(#${id}a)"/>
+      <path d="M70 66 C40 70 30 120 22 168 L118 168 C110 120 100 70 70 66 Z" fill="${robe.c2}"/>
+      <path d="M70 70 C46 76 38 120 34 168 L106 168 C102 120 94 76 70 70 Z" fill="${E.color}" opacity=".55"/>
+      ${staff}${hairBack}
+      <path d="M70 64 C52 68 46 114 36 166 L104 166 C94 114 88 68 70 64 Z" fill="url(#${id}r)"/>
+      ${pattern}
+      <path d="M38 158 Q70 168 102 158 L104 166 L36 166 Z" fill="${robe.trim}"/>
+      <path d="M70 70 L70 160" stroke="${robe.trim}" stroke-width="2" opacity=".6"/>
+      <path d="M57 72 Q70 82 83 72" stroke="${robe.trim}" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="70" cy="92" r="9" fill="${robe.c2}" stroke="${robe.trim}" stroke-width="1.5"/>${emblem}
+      <path d="M86 84 Q98 94 108 99" stroke="${robe.c1}" stroke-width="13" stroke-linecap="round" fill="none"/><path d="M100 94 Q106 98 110 99" stroke="${robe.trim}" stroke-width="4" stroke-linecap="round" fill="none"/>
+      <circle cx="111" cy="100" r="6" fill="${skin}"/>
+      <path d="M55 84 Q45 102 43 116" stroke="${robe.c1}" stroke-width="13" stroke-linecap="round" fill="none"/>
+      <circle cx="43" cy="120" r="6" fill="${skin}"/><circle cx="43" cy="120" r="4" fill="${E.color}" opacity=".5"/>
+      <rect x="64" y="64" width="12" height="8" fill="${skin}"/>
+      <circle cx="70" cy="54" r="17.5" fill="${skin}"/><circle cx="70" cy="54" r="17.5" fill="url(#${id}f)"/>
+      <ellipse cx="64" cy="56" rx="2.6" ry="3" fill="#fff"/><ellipse cx="76" cy="56" rx="2.6" ry="3" fill="#fff"/>
+      <circle cx="64.3" cy="56.4" r="2" fill="${eye}"/><circle cx="76.3" cy="56.4" r="2" fill="${eye}"/>
+      <circle cx="64.9" cy="55.6" r=".7" fill="#fff"/><circle cx="76.9" cy="55.6" r=".7" fill="#fff"/>
+      <path d="M60.5 50.5 Q64 48.8 67 50.2 M73 50.2 Q76 48.8 79.5 50.5" stroke="${look.hair === 'bald' ? '#6b4a33' : hairC}" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M66 63 Q70 66 74 63" stroke="${ink}" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <circle cx="59" cy="61" r="3" fill="#ff8a8a" opacity=".3"/><circle cx="81" cy="61" r="3" fill="#ff8a8a" opacity=".3"/>
+      ${hood ? '' : hairFront}${hat}${hood || !hatOn ? '' : ''}${pet}
+    </svg>`;
+  }
+
+  // ------------------------------------------------------------ the castle scene on the map
+  let sceneStars = null;
+  function sceneSVG() {
+    if (!sceneStars) sceneStars = Array.from({ length: 46 }, () => [Math.random() * 360, Math.random() * 110, Math.random() * 1.3 + 0.3, Math.random() * 3]);
+    const c = cleared(), target = VEN.findIndex((_, i) => isOpen(i) && !fstat(i).clears);
+    const win = Array.from({ length: 9 }, (_, i) => {
+      const y = 168 - i * 15.5, x = i % 2 ? 186 : 174, lit = fstat(i).clears > 0, cur = i === target;
+      return `<rect x="${x}" y="${y}" width="6" height="9" rx="3" fill="${lit ? '#ffc46b' : cur ? '#a99bff' : '#1a1428'}" ${lit || cur ? 'class="lit"' : ''} style="animation-delay:${i * 0.3}s"/>${lit ? `<circle cx="${x + 3}" cy="${y + 4}" r="8" fill="#ffc46b" opacity=".18"/>` : ''}`;
+    }).join('');
+    return `<svg viewBox="0 0 360 210" preserveAspectRatio="xMidYMid slice"><defs>
+      <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d0b22"/><stop offset=".6" stop-color="#2a2150"/><stop offset="1" stop-color="#4b2f5e"/></linearGradient>
+      <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff3d6" stop-opacity=".55"/><stop offset="1" stop-color="#fff3d6" stop-opacity="0"/></radialGradient>
+      <linearGradient id="mtn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b2d5c"/><stop offset="1" stop-color="#1b1530"/></linearGradient>
+      <linearGradient id="cas" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1a1430"/><stop offset=".5" stop-color="#2a2145"/><stop offset="1" stop-color="#140f25"/></linearGradient>
+      <linearGradient id="mist" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8f7bc4" stop-opacity="0"/><stop offset="1" stop-color="#8f7bc4" stop-opacity=".35"/></linearGradient>
+    </defs>
+    <rect width="360" height="210" fill="url(#sky)"/>
+    ${sceneStars.map(([x, y, r, d]) => `<circle class="tw" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(2)}" fill="#fff" style="animation-delay:${d.toFixed(2)}s"/>`).join('')}
+    <circle cx="292" cy="46" r="44" fill="url(#moonGlow)"/><circle cx="292" cy="46" r="19" fill="#fff1d0"/><circle cx="286" cy="41" r="4" fill="#efe0bb"/><circle cx="298" cy="52" r="3" fill="#efe0bb"/>
+    <path d="M0 160 L40 118 L70 140 L110 96 L150 150 L230 150 L262 104 L300 140 L330 112 L360 136 L360 210 L0 210 Z" fill="url(#mtn)"/>
+    <g fill="url(#cas)">
+      <path d="M118 210 L118 128 L112 128 L112 116 L120 116 L120 122 L128 122 L128 116 L136 116 L136 122 L142 122 L142 116 L150 116 L150 128 L144 128 L144 210 Z"/>
+      <path d="M216 210 L216 132 L210 132 L210 120 L218 120 L218 126 L226 126 L226 120 L234 120 L234 126 L240 126 L240 120 L248 120 L248 132 L242 132 L242 210 Z"/>
+      <path d="M140 210 L140 150 L220 150 L220 210 Z"/>
+      <path d="M164 210 L164 46 L158 46 L158 36 L166 36 L166 42 L172 42 L172 36 L180 36 L180 42 L186 42 L186 36 L194 36 L194 46 L188 46 L188 210 Z"/>
+      <path d="M156 36 L176 2 L198 36 Z" fill="#2c2050"/>
+    </g>
+    <path d="M176 2 L176 -6" stroke="#f2c46d" stroke-width="1.2"/><path d="M176 -6 L188 -2 L176 2 Z" fill="#a3263b"/>
+    <g fill="#1a1428">${[128, 228].map((x) => `<rect x="${x}" y="140" width="6" height="9" rx="3"/>`).join('')}</g>
+    ${win}
+    <path d="M168 210 L168 192 Q176 182 184 192 L184 210 Z" fill="#0b0816"/>
+    <rect y="176" width="360" height="34" fill="url(#mist)"/>
+    <text x="196" y="${172 - Math.max(0, c - 1) * 15.5}" fill="#f2c46d" font-size="9" font-family="Grenze Gotisch, serif" opacity="${c ? 0.9 : 0}">◀ ${c} of 9</text>
+    </svg>`;
+  }
+
+  // ------------------------------------------------------------ sound
+  const Sound = (function () {
+    let ctx = null, out = null;
+    function ensure() {
+      if (!save.sound) return null;
+      if (!ctx) { const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null; try { ctx = new AC(); out = ctx.createGain(); out.gain.value = 0.5; out.connect(ctx.destination); } catch (e) { return null; } }
+      if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) { /* ignore */ } }
+      return ctx;
+    }
+    function tone(f, t, dur, type, peak, slideTo) {
+      const o = ctx.createOscillator(), g = ctx.createGain(); o.type = type || 'sine'; o.frequency.setValueAtTime(f, t);
+      if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, t + dur);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak || 0.2, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(out); o.start(t); o.stop(t + dur + 0.05);
+    }
+    const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5, 1568];
+    return {
+      unlock() { ensure(); },
+      right(level) { if (!ensure()) return; const t = ctx.currentTime + 0.01, b = Math.min(3, level || 0); [0, 1, 2].forEach((k) => { tone(notes[k + b] || 1568, t + k * 0.06, 0.35, 'triangle', 0.15); tone((notes[k + b] || 1568) * 2, t + k * 0.06, 0.2, 'sine', 0.05); }); },
+      wrong() { if (!ensure()) return; const t = ctx.currentTime + 0.01; tone(220, t, 0.45, 'sawtooth', 0.07, 98); tone(150, t + 0.05, 0.5, 'square', 0.04, 70); },
+      spell() { if (!ensure()) return; const t = ctx.currentTime + 0.01; for (let k = 0; k < 8; k++) tone(700 + k * 160, t + k * 0.03, 0.22, 'sine', 0.06); },
+      beat(close) { if (!ensure()) return; const t = ctx.currentTime + 0.01; tone(70, t, 0.16, 'sine', 0.35 * close + 0.1, 45); tone(62, t + 0.16, 0.16, 'sine', 0.25 * close + 0.08, 42); },
+      tick(hi) { if (!ensure()) return; tone(hi ? 1046.5 : 523.25, ctx.currentTime + 0.01, 0.18, 'triangle', 0.15); },
+      exit() { if (!ensure()) return; const t = ctx.currentTime + 0.01; [523.25, 659.25, 783.99, 1046.5].forEach((f, k) => tone(f, t + k * 0.11, 0.6, 'triangle', 0.15)); tone(1568, t + 0.48, 0.9, 'sine', 0.08); },
+      caught() { if (!ensure()) return; const t = ctx.currentTime + 0.01; tone(196, t, 1.1, 'sawtooth', 0.08, 49); tone(98, t, 1.2, 'sine', 0.25, 40); },
+    };
+  })();
+
+  // ------------------------------------------------------------ maze
+  function makeMaze(C, R) {
+    const open = Array.from({ length: R }, () => Array(C).fill(0));
+    const seen = Array.from({ length: R }, () => Array(C).fill(false));
+    const D = [[0, -1, 1, 4], [1, 0, 2, 8], [0, 1, 4, 1], [-1, 0, 8, 2]];
+    const stack = [[0, R - 1]]; seen[R - 1][0] = true;
+    while (stack.length) {
+      const [x, y] = stack[stack.length - 1];
+      const nb = D.filter(([dx, dy]) => { const nx = x + dx, ny = y + dy; return nx >= 0 && ny >= 0 && nx < C && ny < R && !seen[ny][nx]; });
+      if (!nb.length) { stack.pop(); continue; }
+      const [dx, dy, b, ob] = pickR(nb), nx = x + dx, ny = y + dy;
+      open[y][x] |= b; open[ny][nx] |= ob; seen[ny][nx] = true; stack.push([nx, ny]);
+    }
+    for (let k = 0; k < Math.round(C * R * 0.06); k++) { const x = Math.floor(Math.random() * (C - 1)), y = Math.floor(Math.random() * R); open[y][x] |= 2; open[y][x + 1] |= 8; }
+    const shade = Array.from({ length: R }, () => Array.from({ length: C }, () => Math.random()));
+    return { C, R, open, D, shade };
+  }
+  const nbrs = (m, x, y) => m.D.filter(([, , b]) => m.open[y][x] & b).map(([dx, dy]) => [x + dx, y + dy]);
+  const key = (c) => c[0] + ',' + c[1];
+  function solve(m, from, to) {
+    const prev = new Map([[key(from), null]]), q = [from];
+    while (q.length) { const c = q.shift(); if (key(c) === key(to)) break; for (const n of nbrs(m, c[0], c[1])) if (!prev.has(key(n))) { prev.set(key(n), c); q.push(n); } }
+    const path = []; let c = to; while (c) { path.unshift(c); c = prev.get(key(c)); } return path;
+  }
+  function planFloor() {
+    for (let tries = 0; tries < 40; tries++) {
+      const m = makeMaze(7, 9), start = [0, 8], exit = [6, 0], path = solve(m, start, exit);
+      if (path.length < 18) continue;
+      const onPath = new Set(path.map(key));
+      const branchAt = (i) => nbrs(m, path[i][0], path[i][1]).filter((n) => !onPath.has(key(n)));
+      const stops = [0];
+      for (let k = 1; k < JUNCTIONS; k++) {
+        const target = Math.round(k * (path.length - 1) / JUNCTIONS); let best = target, bestD = 99;
+        for (let i = Math.max(stops[k - 1] + 1, target - 2); i <= Math.min(path.length - 2, target + 2); i++) if (branchAt(i).length && Math.abs(i - target) < bestD) { best = i; bestD = Math.abs(i - target); }
+        stops.push(Math.max(best, stops[k - 1] + 1));
+      }
+      stops.push(path.length - 1);
+      // torches on walls along the route
+      const torches = [];
+      path.forEach((c, i) => { if (i % 3 !== 1) return; const o = m.open[c[1]][c[0]], sides = [[1, 0, -0.5], [2, 0.5, 0], [4, 0, 0.5], [8, -0.5, 0]].filter(([b]) => !(o & b)); if (sides.length) { const s = pickR(sides); torches.push({ c, dx: s[1], dy: s[2], ph: Math.random() * 6 }); } });
+      return { m, path, stops, onPath, branchAt, torches };
+    }
+    return null;
+  }
+  function detourFrom(plan, i) {
+    const here = plan.path[i], b = plan.branchAt(i);
+    if (!b.length) { const back = plan.path[Math.max(0, i - 1)]; return [here, back, here]; }
+    const route = [here, b[0]], seen = new Set([key(here), key(b[0])]);
+    for (let s = 0; s < 3; s++) { const c = route[route.length - 1], n = nbrs(plan.m, c[0], c[1]).find((x) => !seen.has(key(x)) && !plan.onPath.has(key(x))); if (!n) break; route.push(n); seen.add(key(n)); }
+    return route.concat(route.slice(0, -1).reverse());
+  }
+
+  // ------------------------------------------------------------ drawing
+  const cv = $('#maze'), g = cv.getContext('2d');
+  const fog = document.createElement('canvas'), fg = fog.getContext('2d');
+  let W = 0, H = 0, dpr = 1, cell = 20, ox = 0, oy = 0, raf = 0, lastT = 0;
+  const parts = [], motes = Array.from({ length: 26 }, () => ({ x: Math.random(), y: Math.random(), v: 0.01 + Math.random() * 0.02, p: Math.random() * 6 }));
+  function sizeCanvas() {
+    const r = cv.getBoundingClientRect(); dpr = Math.min(2, window.devicePixelRatio || 1); W = r.width; H = r.height;
+    cv.width = fog.width = Math.max(1, Math.round(W * dpr)); cv.height = fog.height = Math.max(1, Math.round(H * dpr));
+    if (run) { cell = Math.min((W - 12) / run.plan.m.C, (H - 12) / run.plan.m.R); ox = (W - cell * run.plan.m.C) / 2; oy = (H - cell * run.plan.m.R) / 2; }
+  }
+  const cx = (c) => ox + (c + 0.5) * cell, cy = (r) => oy + (r + 0.5) * cell;
+  function burst(x, y, n, spread, colors) {
+    const fx = effectNow();
+    for (let k = 0; k < n; k++) {
+      const a = Math.random() * Math.PI * 2, sp = (0.6 + Math.random()) * (spread || 1) * cell * 2.4;
+      parts.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - (fx.shape === 'ember' ? cell : 0), life: 0, max: 0.6 + Math.random() * 0.7, size: cell * (0.08 + Math.random() * 0.1),
+        color: colors ? pickR(colors) : fx.colors ? pickR(fx.colors) : `hsl(${Math.floor(Math.random() * 360)} 95% 70%)`, shape: colors ? 'dot' : fx.shape });
+    }
+  }
+  function drawPart(p) {
+    g.globalAlpha = Math.max(0, 1 - p.life / p.max); g.fillStyle = p.color;
+    if (p.shape === 'star') { g.save(); g.translate(p.x, p.y); g.rotate(p.life * 4); g.beginPath(); for (let i = 0; i < 10; i++) { const r = i % 2 ? p.size * 0.45 : p.size * 1.2, t = i * Math.PI / 5; g.lineTo(Math.cos(t) * r, Math.sin(t) * r); } g.fill(); g.restore(); }
+    else if (p.shape === 'diamond') { g.save(); g.translate(p.x, p.y); g.rotate(p.life * 2); g.fillRect(-p.size * 0.7, -p.size * 0.7, p.size * 1.4, p.size * 1.4); g.restore(); }
+    else { g.beginPath(); g.arc(p.x, p.y, p.size * (p.shape === 'firefly' ? 0.8 + Math.sin(p.life * 20) * 0.3 : 1), 0, Math.PI * 2); g.fill(); }
+    g.globalAlpha = 1;
+  }
+  function pathPoint(f) { const P = run.plan.path, i = Math.max(0, Math.min(P.length - 1, Math.floor(f))), j = Math.min(P.length - 1, i + 1), t = Math.max(0, Math.min(1, f - i)); return [P[i][0] + (P[j][0] - P[i][0]) * t, P[i][1] + (P[j][1] - P[i][1]) * t]; }
+  function draw(t) {
+    raf = requestAnimationFrame(draw);
+    const dt = Math.min(0.05, (t - (lastT || t)) / 1000); lastT = t;
+    if (!run) return;
+    if (!W) sizeCanvas();
+    tick(dt); stepWalk(dt);
+    const m = run.plan.m, pal = FLOORS[run.vi].pal, time = t / 1000;
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.fillStyle = '#07060c'; g.fillRect(0, 0, W, H);
+    // flagstones
+    for (let y = 0; y < m.R; y++) for (let x = 0; x < m.C; x++) {
+      const X = ox + x * cell, Y = oy + y * cell, v = m.shade[y][x], lit = run.visited.has(x + ',' + y);
+      g.fillStyle = lit ? pal[1] : pal[0]; g.fillRect(X + 1, Y + 1, cell - 2, cell - 2);
+      g.fillStyle = `rgba(255,255,255,${0.02 + v * 0.05})`; g.fillRect(X + 2, Y + 2, cell / 2 - 2, cell / 2 - 2); g.fillRect(X + cell / 2 + 1, Y + cell / 2 + 1, cell / 2 - 3, cell / 2 - 3);
+      g.fillStyle = 'rgba(0,0,0,.18)'; g.fillRect(X + cell / 2 - 0.5, Y + 2, 1, cell - 4); g.fillRect(X + 2, Y + cell / 2 - 0.5, cell - 4, 1);
+    }
+    // stone walls: shadow, body, highlight
+    const wallPath = () => { g.beginPath(); for (let y = 0; y < m.R; y++) for (let x = 0; x < m.C; x++) { const o = m.open[y][x], X = ox + x * cell, Y = oy + y * cell;
+      if (!(o & 1)) { g.moveTo(X, Y); g.lineTo(X + cell, Y); } if (!(o & 8)) { g.moveTo(X, Y); g.lineTo(X, Y + cell); }
+      if (x === m.C - 1 && !(o & 2)) { g.moveTo(X + cell, Y); g.lineTo(X + cell, Y + cell); } if (y === m.R - 1 && !(o & 4)) { g.moveTo(X, Y + cell); g.lineTo(X + cell, Y + cell); } } };
+    const lw = Math.max(3, cell * 0.2); g.lineCap = 'square';
+    g.save(); g.translate(0, lw * 0.35); wallPath(); g.strokeStyle = 'rgba(0,0,0,.6)'; g.lineWidth = lw; g.stroke(); g.restore();
+    wallPath(); g.strokeStyle = pal[2]; g.lineWidth = lw; g.stroke();
+    g.save(); g.translate(0, -lw * 0.22); wallPath(); g.strokeStyle = pal[3]; g.globalAlpha = 0.45; g.lineWidth = lw * 0.28; g.stroke(); g.restore(); g.globalAlpha = 1;
+    // torches, lit once you pass them
+    run.plan.torches.forEach((tr) => {
+      const lit = run.visited.has(key(tr.c)), x = cx(tr.c[0]) + tr.dx * cell * 0.78, y = cy(tr.c[1]) + tr.dy * cell * 0.78;
+      g.fillStyle = '#2a2018'; g.fillRect(x - cell * 0.05, y - cell * 0.02, cell * 0.1, cell * 0.2);
+      if (lit) { const f = reduceMotion ? 1 : 0.8 + Math.sin(time * 9 + tr.ph) * 0.12 + Math.sin(time * 23 + tr.ph) * 0.08; g.fillStyle = '#ffb347'; g.beginPath(); g.ellipse(x, y - cell * 0.06, cell * 0.07 * f, cell * 0.13 * f, 0, 0, Math.PI * 2); g.fill(); g.fillStyle = '#fff1c2'; g.beginPath(); g.ellipse(x, y - cell * 0.03, cell * 0.03, cell * 0.06, 0, 0, Math.PI * 2); g.fill(); }
+    });
+    // exit portal
+    const ex = run.plan.path[run.plan.path.length - 1], exX = cx(ex[0]), exY = cy(ex[1]), pulse = reduceMotion ? 1 : 0.85 + Math.sin(time * 2.5) * 0.15;
+    const eg = g.createRadialGradient(exX, exY, 0, exX, exY, cell * 1.2); eg.addColorStop(0, `rgba(255,230,160,${0.9 * pulse})`); eg.addColorStop(0.45, `rgba(242,196,109,${0.5 * pulse})`); eg.addColorStop(1, 'rgba(242,196,109,0)');
+    g.fillStyle = eg; g.beginPath(); g.arc(exX, exY, cell * 1.2, 0, Math.PI * 2); g.fill();
+    g.strokeStyle = '#fff1c2'; g.lineWidth = Math.max(1.5, cell * 0.05); g.beginPath(); g.moveTo(exX - cell * 0.22, exY + cell * 0.3); g.lineTo(exX - cell * 0.22, exY - cell * 0.05); g.arc(exX, exY - cell * 0.05, cell * 0.22, Math.PI, 0); g.lineTo(exX + cell * 0.22, exY + cell * 0.3); g.stroke();
+    for (let k = 0; k < 3; k++) { const a = time * 1.6 + k * 2.09; g.fillStyle = '#fff6da'; g.beginPath(); g.arc(exX + Math.cos(a) * cell * 0.42, exY + Math.sin(a) * cell * 0.42, cell * 0.04, 0, Math.PI * 2); g.fill(); }
+    // the Shadow
+    const sp = run.shadow >= 0 ? pathPoint(run.shadow) : null;
+    if (sp) {
+      const sx = cx(sp[0]), sy = cy(sp[1]);
+      for (let k = 0; k < 6; k++) { const a = time * 1.3 + k, r = cell * (0.55 + 0.12 * Math.sin(time * 3 + k)); const gx = sx + Math.cos(a) * cell * 0.2, gy = sy + Math.sin(a * 1.3) * cell * 0.2;
+        const sg = g.createRadialGradient(gx, gy, 0, gx, gy, r); sg.addColorStop(0, 'rgba(10,0,18,.85)'); sg.addColorStop(0.6, 'rgba(40,0,40,.5)'); sg.addColorStop(1, 'rgba(60,0,40,0)'); g.fillStyle = sg; g.beginPath(); g.arc(gx, gy, r, 0, Math.PI * 2); g.fill(); }
+      const blink = Math.sin(time * 1.7) > 0.96 ? 0.2 : 1; g.fillStyle = run.frozen > 0 ? '#bff4ff' : '#ff4d4d'; g.shadowColor = g.fillStyle; g.shadowBlur = 8;
+      g.beginPath(); g.ellipse(sx - cell * 0.12, sy - cell * 0.05, cell * 0.06, cell * 0.05 * blink, 0, 0, Math.PI * 2); g.ellipse(sx + cell * 0.12, sy - cell * 0.05, cell * 0.06, cell * 0.05 * blink, 0, 0, Math.PI * 2); g.fill(); g.shadowBlur = 0;
+      if (run.frozen > 0) { g.strokeStyle = 'rgba(191,244,255,.8)'; g.lineWidth = 2; g.beginPath(); g.arc(sx, sy, cell * 0.55, 0, Math.PI * 2); g.stroke(); }
+      if (run.slow > 0) { g.strokeStyle = 'rgba(123,224,123,.8)'; g.lineWidth = 2.5; for (let k = 0; k < 3; k++) { g.beginPath(); g.arc(sx, sy, cell * (0.35 + k * 0.12), k, k + 2.2); g.stroke(); } }
+    }
+    // darkness with lantern, torch and memory light
+    fg.setTransform(dpr, 0, 0, dpr, 0, 0); fg.globalCompositeOperation = 'source-over'; fg.clearRect(0, 0, W, H);
+    fg.fillStyle = 'rgba(4,3,9,0.82)'; fg.fillRect(0, 0, W, H); fg.globalCompositeOperation = 'destination-out';
+    const hole = (x, y, r, a) => { const gr = fg.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, `rgba(0,0,0,${a})`); gr.addColorStop(1, 'rgba(0,0,0,0)'); fg.fillStyle = gr; fg.beginPath(); fg.arc(x, y, r, 0, Math.PI * 2); fg.fill(); };
+    run.visited.forEach((k) => { const [x, y] = k.split(',').map(Number); hole(cx(x), cy(y), cell * 1.1, 0.7); });
+    run.plan.torches.forEach((tr) => { if (run.visited.has(key(tr.c))) hole(cx(tr.c[0]) + tr.dx * cell * 0.7, cy(tr.c[1]) + tr.dy * cell * 0.7, cell * (1.25 + (reduceMotion ? 0 : Math.sin(time * 9 + tr.ph) * 0.06)), 0.85); });
+    const flick = reduceMotion ? 1 : 1 + Math.sin(time * 11) * 0.03 + Math.sin(time * 5.3) * 0.03;
+    hole(run.pos.x, run.pos.y, cell * 3.1 * flick, 1); hole(exX, exY, cell * 1.0, 0.7);
+    if (sp) { fg.globalCompositeOperation = 'source-over'; const sx = cx(sp[0]), sy = cy(sp[1]), dg = fg.createRadialGradient(sx, sy, 0, sx, sy, cell * 1.4); dg.addColorStop(0, 'rgba(4,0,8,.7)'); dg.addColorStop(1, 'rgba(4,0,8,0)'); fg.fillStyle = dg; fg.beginPath(); fg.arc(sx, sy, cell * 1.4, 0, Math.PI * 2); fg.fill(); }
+    g.drawImage(fog, 0, 0, W, H);
+    if (sp) { const sx = cx(sp[0]), sy = cy(sp[1]); g.fillStyle = run.frozen > 0 ? '#bff4ff' : '#ff4d4d'; g.globalAlpha = 0.9; g.beginPath(); g.arc(sx - cell * 0.12, sy - cell * 0.05, cell * 0.045, 0, Math.PI * 2); g.arc(sx + cell * 0.12, sy - cell * 0.05, cell * 0.045, 0, Math.PI * 2); g.fill(); g.globalAlpha = 1; }
+    // dust in the lantern light
+    if (!reduceMotion) motes.forEach((mo) => { mo.y -= mo.v * dt; if (mo.y < 0) mo.y = 1; const x = run.pos.x + (mo.x - 0.5) * cell * 4 + Math.sin(time + mo.p) * 6, y = run.pos.y + (mo.y - 0.5) * cell * 4; g.fillStyle = 'rgba(255,230,180,.35)'; g.fillRect(x, y, 1.4, 1.4); });
+    // the sorcerer with element glow
+    const robe = item('robe', save.wear.robe), E = el(), px = run.pos.x, py = run.pos.y, s = cell * 0.36;
+    const lg = g.createRadialGradient(px, py, 0, px, py, s * 2.6); lg.addColorStop(0, 'rgba(255,196,107,0.5)'); lg.addColorStop(1, 'rgba(255,196,107,0)'); g.fillStyle = lg; g.beginPath(); g.arc(px, py, s * 2.6, 0, Math.PI * 2); g.fill();
+    g.fillStyle = robe.c1; g.beginPath(); g.moveTo(px - s, py + s); g.quadraticCurveTo(px, py - s * 1.2, px + s, py + s); g.closePath(); g.fill();
+    g.fillStyle = SKINS[save.look.skin] || SKINS[0]; g.beginPath(); g.arc(px, py - s * 0.35, s * 0.42, 0, Math.PI * 2); g.fill();
+    g.fillStyle = robe.c2; g.beginPath(); g.moveTo(px - s * 0.62, py - s * 0.55); g.lineTo(px + s * 0.25, py - s * 1.9); g.lineTo(px + s * 0.6, py - s * 0.55); g.closePath(); g.fill();
+    g.fillStyle = E.glow; g.shadowColor = E.color; g.shadowBlur = 10; g.beginPath(); g.arc(px + s * 0.9, py - s * 0.6, s * 0.18, 0, Math.PI * 2); g.fill(); g.shadowBlur = 0;
+    for (let i = parts.length - 1; i >= 0; i--) { const p = parts[i]; p.life += dt; if (p.life > p.max) { parts.splice(i, 1); continue; } p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= 0.94; p.vy = p.vy * 0.94 + (p.shape === 'ember' ? -cell * 0.6 : cell * 0.5) * dt; drawPart(p); }
+    if (run.walk && !reduceMotion && Math.random() < (run.streak >= 3 ? 0.8 : 0.35)) burst(px, py, 1, 0.25);
+    // danger vignette
+    const d = danger();
+    if (d > 0) { const vg = g.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.3, W / 2, H / 2, Math.max(W, H) * 0.75); vg.addColorStop(0, 'rgba(255,40,40,0)'); vg.addColorStop(1, `rgba(255,40,40,${0.45 * d * (reduceMotion ? 1 : 0.75 + Math.sin(time * 8) * 0.25)})`); g.fillStyle = vg; g.fillRect(0, 0, W, H); }
+  }
+  function setPos(c) { run.pos = { x: cx(c[0]), y: cy(c[1]) }; run.cellNow = c; }
+  function walk(cells, done, along) { run.walk = { cells, i: 0, t: 0, done, along }; }
+  function stepWalk(dt) {
+    const w = run.walk;
+    if (!w) { setPos(run.cellNow); return; }
+    const speed = (save.gift === 'swift' ? 8.5 : 7) * (run.streak >= 3 ? 1.35 : 1) * (reduceMotion ? 1.6 : 1);
+    w.t += dt * speed;
+    while (w.t >= 1 && w.i < w.cells.length - 1) { w.t -= 1; w.i++; run.visited.add(key(w.cells[w.i])); }
+    if (w.i >= w.cells.length - 1) { run.walk = null; run.cellNow = w.cells[w.cells.length - 1]; setPos(run.cellNow); w.done && w.done(); return; }
+    const a = w.cells[w.i], b = w.cells[w.i + 1];
+    run.pos = { x: cx(a[0] + (b[0] - a[0]) * w.t), y: cy(a[1] + (b[1] - a[1]) * w.t) };
+  }
+
+  // ------------------------------------------------------------ the race
+  let run = null, heartT = 0;
+  const playerIdx = () => run.walk && run.walk.along ? run.plan.stops[run.k] + run.walk.i + run.walk.t : run.plan.stops[run.k];
+  const gap = () => playerIdx() - run.shadow;
+  const danger = () => (!run || run.state !== 'race' || run.shadow < 0) ? 0 : Math.max(0, Math.min(1, (3.5 - gap()) / 3));
+  function tick(dt) {
+    if (!run || run.state !== 'race' || sheetOpen() || document.hidden) return;
+    run.time += dt;
+    if (run.frozen > 0) run.frozen -= dt;
+    else run.shadow += run.speed * dt * (run.slow > 0 ? 0.35 : 1);
+    if (run.slow > 0) run.slow -= dt;
+    const gp = gap();
+    if (gp <= 0.15) { caught(); return; }
+    heartT -= dt;
+    if (gp < 5 && heartT <= 0) { Sound.beat(1 - gp / 5); heartT = 0.35 + gp * 0.16; }
+    if ((run.hudT = (run.hudT || 0) + dt) > 0.12) { run.hudT = 0; renderMeter(); }
+  }
+  function renderMeter() {
+    const gp = gap(), f = Math.max(0, Math.min(1, gp / 12));
+    $('#meterFill').style.width = (f * 100).toFixed(1) + '%';
+    $('#meter').classList.toggle('close', gp < 4);
+    $('#meterText').textContent = run.state === 'count' ? 'The Shadow wakes' : run.frozen > 0 ? 'The Shadow is frozen!' : run.slow > 0 ? 'The Shadow is tangled in roots' : gp < 3 ? 'The Shadow is right behind you!' : `The Shadow: ${Math.max(0, Math.floor(gp))} steps behind`;
+    $('#hudTime').textContent = clock(run.time);
+    $('#stage').classList.toggle('danger', gp < 2.5 && run.state === 'race');
+  }
+  function startFloor(i) {
+    Sound.unlock(); $$('.sheet').forEach((s) => { s.hidden = true; });
+    const plan = planFloor(), budget = VEN[i].secs * 1.5 * (save.gift === 'swift' ? 1.15 : 1);
+    run = { vi: i, plan, k: 0, gems: 0, wrong: 0, firstTry: true, mistakes: [], recent: [], q: null, values: [], locked: true, state: 'count',
+      shadow: save.gift === 'brave' ? -9 : -5, speed: (plan.path.length - 1) / budget, par: VEN[i].secs * 0.95, time: 0, frozen: 0, slow: 0, streak: 0, shield: false, askedAt: 0,
+      charges: Object.fromEntries(allSpells().map((sp) => [sp.id, chargesFor(sp)])), visited: new Set([key(plan.path[0])]), walk: null, cellNow: plan.path[0], pos: { x: 0, y: 0 } };
+    show('play');
+    $('#hudFloor').textContent = `${i + 1}. ${FLOORS[i].name}`;
+    $('#overlay').hidden = true; status(''); $('#haste').hidden = true;
+    document.documentElement.style.setProperty('--rune', el().color);
+    requestAnimationFrame(() => { sizeCanvas(); setPos(run.cellNow); cancelAnimationFrame(raf); lastT = 0; raf = requestAnimationFrame(draw); });
+    renderHud(); renderSpells(); newRiddle(true); renderMeter(); countdown();
+  }
+  function countdown() {
+    const box = $('#count'), n = $('#countNum'); let c = 3; box.hidden = false; run.locked = true;
+    const step = () => {
+      if (!run || run.state !== 'count') { box.hidden = true; return; }
+      if (sheetOpen()) { setTimeout(step, 200); return; }
+      if (c > 0) { n.textContent = c; n.style.animation = 'none'; void n.offsetWidth; n.style.animation = ''; Sound.tick(false); c--; setTimeout(step, 650); }
+      else { n.textContent = 'Run!'; n.style.animation = 'none'; void n.offsetWidth; n.style.animation = ''; Sound.tick(true); setTimeout(() => { box.hidden = true; if (!run) return; run.state = 'race'; run.locked = false; run.askedAt = run.time; }, 450); }
+    };
+    step();
+  }
+  function renderHud() {
+    $('#hudGems').textContent = fmt(save.gems + run.gems);
+    $('#progress').textContent = run.k < JUNCTIONS ? `Door ${run.k + 1} of ${JUNCTIONS}` : 'The stairs!';
+    const h = $('#haste'); h.hidden = run.streak < 3; h.textContent = `Haste ×${Math.min(run.streak, 9)}`;
+  }
+  function renderSpells() {
+    $('#spells').innerHTML = allSpells().map((sp) => {
+      const open = sp.sig || spellOpen(sp), ch = run.charges[sp.id];
+      return `<button class="spell${sp.sig ? ' sig' : ''}" type="button" data-spell="${sp.id}" ${!open || !ch ? 'disabled' : ''} aria-label="${sp.name}${open ? ', ' + ch + ' left. ' + sp.desc : ', locked'}">${open ? ICON[sp.id] : ICON.lock}<span>${sp.short}</span><span class="ch">${open ? '×' + ch : 'Locked'}</span></button>`;
+    }).join('');
+  }
+  function setOpt(id, html) { const e = $(id); e.hidden = !html; e.innerHTML = html || ''; }
+  function status(text, cls) { const s = $('#status'); s.className = 'status' + (cls ? ' ' + cls : ''); s.innerHTML = text || ''; }
+  function callout(text, bad) { const c = document.createElement('div'); c.className = 'callout' + (bad ? ' bad' : ''); c.textContent = text; $('#stage').appendChild(c); setTimeout(() => c.remove(), 950); }
+  function valueHTML(q, v) { return num(v) + (q.unit ? ' <small>' + q.unit + '</small>' : ''); }
+  function answerText(q, v) { const val = num(v) + (q.unit ? ' ' + q.unit : ''); return q.label === '=' ? val : q.label + ' ' + val; }
+  const stepsList = (q) => q.steps.map((s) => `<li><span class="s-m math">${s.m}</span>${s.n ? `<span class="s-n">${s.n}</span>` : ''}</li>`).join('');
+  const qBlock = (q) => (q.ctx ? `<div class="ctx">${q.ctx}</div>` : '') + `<div class="q math">${[q.given ? q.given + ', work out' : '', q.html].filter(Boolean).join(' ')}</div>` + (q.ask ? `<div class="ctx math">${q.ask}</div>` : '');
+  function doorValues(q, negOK) {
+    const a = q.answer, near = [a + 1, a - 1, a + 2, a - 2, a + 10, a - 10], far = [a * 2, Math.round(a / 2), a + 3, a - 3, a + 5];
+    if (negOK && a !== 0) near.push(-a);
+    const plain = (h) => String(h).replace(/<[^>]+>/g, ' ').replace(/−/g, '-');
+    if (q.steps.length > 1) { const m = plain(q.steps[q.steps.length - 2].m).match(/-?\d+/g); if (m) near.unshift(Number(m[m.length - 1])); }
+    const ok = (v) => Number.isInteger(v) && v !== a && (negOK || v >= 0) && Math.abs(v) < 10000;
+    const out = [];
+    const take = (list) => { const l = list.filter((v) => ok(v) && !out.includes(v)); if (l.length) out.push(l[0] === near[0] && Math.random() < 0.6 ? l[0] : pickR(l)); };
+    take(near); take(Math.random() < 0.6 ? near : far); while (out.length < 2) take(near.concat(far, [a + 4, a + 7, a - 4]));
+    const all = [a].concat(out); for (let i = all.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [all[i], all[j]] = [all[j], all[i]]; }
+    return all;
+  }
+  function newRiddle(silent) {
+    const q = QB.generate(run.vi, run.recent); run.recent.push(q.key); if (run.recent.length > 12) run.recent.shift();
+    run.q = q; run.values = doorValues(q, !!VEN[run.vi].negatives); if (!silent) run.locked = false; run.askedAt = run.time;
+    $('#rPrompt').innerHTML = q.prompt; setOpt('#rGiven', q.given); setOpt('#rCtx', q.ctx); setOpt('#rAsk', q.ask); $('#whisper').hidden = true;
+    const main = $('#rMain'); main.innerHTML = q.html; main.classList.toggle('multi', q.html.indexOf('class="ml"') !== -1); fitMain();
+    const ways = ['Left', 'Ahead', 'Right'], lab = q.label === '=' ? '' : q.label;
+    $('#doors').innerHTML = run.values.map((v, i) => `<button class="door" type="button" data-d="${i}" aria-label="${ways[i]} door: ${answerText(q, v).replace(/<[^>]+>/g, '')}"><span class="way">${ways[i]}</span>${lab ? `<span class="lab math">${lab}</span>` : ''}<span class="val math">${valueHTML(q, v)}</span></button>`).join('');
+    renderHud(); renderSpells();
+  }
+  function fitMain() { const e = $('#rMain'); e.style.fontSize = ''; let s = parseFloat(getComputedStyle(e).fontSize), n = 0; while (e.scrollWidth > e.clientWidth + 1 && s > 15 && n++ < 40) { s -= 2; e.style.fontSize = s + 'px'; } }
+  function advance() { const from = run.plan.stops[run.k], to = run.plan.stops[run.k + 1]; walk(run.plan.path.slice(from, to + 1), arrive, true); }
+  function choose(i) {
+    if (!run || run.locked || run.state !== 'race' || sheetOpen()) return;
+    const v = run.values[i], q = run.q, doors = $$('.door');
+    if (doors[i].classList.contains('gone')) return;
+    run.locked = true; doors.forEach((d) => { d.disabled = true; });
+    if (v === q.answer) {
+      doors[i].classList.add('right');
+      const quick = run.time - run.askedAt < 6;
+      run.streak = run.firstTry ? run.streak + 1 : 1;
+      let gain = run.firstTry ? 2 : 1; if (quick) gain++; if (run.streak >= 3) gain++;
+      run.gems += gain; run.firstTry = true;
+      Sound.right(Math.min(3, Math.floor(run.streak / 2))); burst(run.pos.x, run.pos.y, reduceMotion ? 6 : 26);
+      callout(run.streak >= 3 ? `Haste! ×${run.streak}` : quick ? 'Swift!' : pickR(['Onward!', 'The door opens!', 'Brilliant!', 'Well cast!']));
+      status(`+${gain} gem${gain > 1 ? 's' : ''}${quick ? ' · swift answer' : ''}`, 'good'); renderHud();
+      setTimeout(advance, 260);
+    } else {
+      doors[i].classList.add('wrong'); doors[run.values.indexOf(q.answer)].classList.add('right');
+      Sound.wrong(); run.wrong++; run.firstTry = false; run.streak = 0; run.mistakes.push({ q, given: v }); renderHud();
+      let msg = `Dead end! The right door was <span class="math">${answerText(q, q.answer)}</span>.`;
+      if (run.shield) { run.shield = false; msg += ' Your Stone Shield held.'; status(msg, 'bad'); callout('Shielded!'); setTimeout(() => { if (run && run.state === 'race') { status('', ''); newRiddle(); } }, 1300); return; }
+      run.shadow += 1.5; callout('Dead end!', true);
+      status(msg + ' The Shadow surges closer.', 'bad');
+      setTimeout(() => { if (!run || run.state !== 'race') return; walk(detourFrom(run.plan, run.plan.stops[run.k]), () => { if (run && run.state === 'race') { status('Back at the junction. Quick, a new riddle!', ''); newRiddle(); } }); }, 600);
+    }
+  }
+  function arrive() { if (!run || run.state !== 'race') return; run.k++; if (run.k >= JUNCTIONS) { finish(); return; } newRiddle(); }
+  function caught() {
+    run.state = 'caught'; run.locked = true; run.walk = null; Sound.caught(); $('#stage').classList.remove('danger');
+    $('#overlayCard').className = 'overlay-card bad';
+    $('#overlayCard').innerHTML = `<h2>The Shadow caught you!</h2><p>It reached you at door ${run.k + 1} of 8. Shake it off and race again.</p><button class="btn primary" type="button" id="retryBtn">Race again</button><button class="btn ghost" type="button" id="outMapBtn">Castle map</button>`;
+    $('#overlay').hidden = false;
+    $('#retryBtn').addEventListener('click', () => startFloor(run.vi)); $('#outMapBtn').addEventListener('click', toMap);
+    setTimeout(() => { const b = $('#retryBtn'); if (b) b.focus(); }, 50);
+  }
+  function cast(id) {
+    if (!run || run.locked || run.state !== 'race' || !run.charges[id]) return;
+    const q = run.q;
+    if (id === 'shield' && run.shield) { status('Your shield is already up.', ''); return; }
+    run.charges[id]--; Sound.spell(); burst(run.pos.x, run.pos.y, 18, 0.7, [el().color, el().glow]);
+    if (id === 'whisper') { const w = $('#whisper'); w.innerHTML = q.hint; w.hidden = false; status('The owl whispers a clue.', 'good'); }
+    if (id === 'seeing') { const wr = $$('.door').filter((d) => run.values[+d.dataset.d] !== q.answer && !d.classList.contains('gone')); const d = pickR(wr); if (d) { d.classList.add('gone'); d.disabled = true; } status('A wrong door crumbles to dust.', 'good'); }
+    if (id === 'scroll') { run.locked = true; $('#stQ').innerHTML = qBlock(q); $('#stSteps').innerHTML = stepsList(q); openSheet('#stepsSheet'); }
+    if (id === 'sunburst') { run.shadow = Math.max(-4, run.shadow - 4); callout('Sunburst!'); status('Light floods the corridor. The Shadow falls back.', 'good'); }
+    if (id === 'shield') { run.shield = true; status('A stone shield guards your next wrong turn.', 'good'); }
+    if (id === 'fireball') { run.shadow = Math.max(-5, run.shadow - 5); callout('Fireball!'); status('Your fireball blasts the Shadow back.', 'good'); }
+    if (id === 'freeze') { run.frozen = 12; callout('Frost Lock!'); status('The Shadow is frozen solid for 12 seconds.', 'good'); }
+    if (id === 'roots') { run.slow = 20; callout('Rootbind!'); status('Roots wrap around the Shadow.', 'good'); }
+    if (id === 'stride') { run.locked = true; callout('Storm Stride!'); status('Lightning carries you past the door.', 'good'); $$('.door').forEach((d) => { d.disabled = true; }); setTimeout(advance, 300); }
+    renderHud(); renderSpells(); renderMeter();
+  }
+  function finish() {
+    run.state = 'done'; run.locked = true; Sound.exit(); burst(run.pos.x, run.pos.y, reduceMotion ? 10 : 80, 1.7); $('#stage').classList.remove('danger');
+    callout('You escaped!'); setTimeout(showResults, 1300);
+  }
+  function showResults() {
+    const r = run, vn = VEN[r.vi], fast = r.time <= r.par, clean = r.wrong <= 1, stars = 1 + (clean ? 1 : 0) + (fast ? 1 : 0);
+    const before = { floors: VEN.map((_, i) => isOpen(i)), spells: SPELLS.filter(spellOpen).map((s) => s.id), fx: EFFECTS.filter(fxOpen).map((f) => f.id) };
+    const old = fstat(r.vi), bonus = 5 + stars * 2, newBest = !old.best || r.time < old.best;
+    r.gems += bonus;
+    save.floors[vn.id] = { stars: Math.max(old.stars || 0, stars), clears: (old.clears || 0) + 1, best: newBest ? Math.round(r.time * 10) / 10 : old.best };
+    save.gems += r.gems; persist();
+    $('#resWhere').textContent = `Floor ${r.vi + 1} · ${FLOORS[r.vi].name}`;
+    $('#resStars').innerHTML = [0, 1, 2].map((i) => starSVG(i < stars, i)).join('');
+    $('#resCrit').innerHTML = `<li class="met">Escaped the Shadow</li><li class="${clean ? 'met' : ''}">One wrong turn or fewer</li><li class="${fast ? 'met' : ''}">Beat the castle record of ${clock(r.par)}</li>`;
+    $('#resTime').textContent = clock(r.time); $('#resGems').textContent = '+' + r.gems; $('#resWrong').textContent = r.wrong;
+    const news = [];
+    if (newBest && old.best) news.push(['hot', `New best time on this floor: ${clock(r.time)}.`]);
+    news.push(['', `Floor bonus: +${bonus} gems.`]);
+    VEN.forEach((_, i) => { if (isOpen(i) && !before.floors[i]) news.push(['hot', `Unlocked: Floor ${i + 1}, ${FLOORS[i].name}.`]); });
+    SPELLS.forEach((s) => { if (spellOpen(s) && !before.spells.includes(s.id)) news.push(['hot', `New spell: ${s.name}. ${s.desc}`]); });
+    EFFECTS.forEach((f) => { if (fxOpen(f) && !before.fx.includes(f.id)) news.push(['hot', `New wand sparkle: ${f.name}. Choose it in the Spellbook.`]); });
+    const cheapest = Object.values(WARDROBE).flatMap((c) => c.items).filter((it) => it.cost > 0 && !Object.values(save.owned).flat().includes(it.id)).sort((a, b) => a.cost - b.cost)[0];
+    if (cheapest && save.gems >= cheapest.cost) news.push(['hot', `You have ${save.gems} gems. Visit the Wardrobe to spend them.`]);
+    $('#news').innerHTML = news.map(([c, t]) => `<p class="${c}">${t}</p>`).join('');
+    $('#nextBtn').hidden = !(r.vi + 1 < VEN.length && isOpen(r.vi + 1));
+    $('#fixes').hidden = !r.mistakes.length;
+    $('#fixList').innerHTML = r.mistakes.map((m) => `<li class="fix">${qBlock(m.q)}<div class="a">You chose ${num(m.given)}. The answer is <b class="math">${answerText(m.q, m.q.answer)}</b>.</div><details><summary>Show me how</summary><ol class="steps">${stepsList(m.q)}</ol></details></li>`).join('');
+    cancelAnimationFrame(raf); show('results');
+  }
+  function toMap() { cancelAnimationFrame(raf); run = null; $$('.sheet').forEach((s) => { s.hidden = true; }); show('map'); renderMap(); }
+  function pause(title, text) { if (!run || run.state !== 'race' && run.state !== 'count') return; $('#psTitle').textContent = title; $('#psText').textContent = text; openSheet('#pauseSheet'); }
+
+  // ------------------------------------------------------------ screens
+  function show(id) { ['map', 'play', 'results'].forEach((s) => { $('#' + s).hidden = s !== id; }); document.documentElement.classList.toggle('playing', id === 'play'); window.scrollTo(0, 0); }
+  let toastT = 0;
+  function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 2600); }
+  let lastFocus = null;
+  function openSheet(id) { $('#toast').hidden = true; lastFocus = document.activeElement; const s = $(id); s.hidden = false; const f = s.querySelector('.btn.primary:not(:disabled)') || s.querySelector('button'); if (f && id !== 'setupSheet') setTimeout(() => { try { f.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }, 30); }
+  function closeSheet(id) { const s = $(id); if (s.hidden) return; s.hidden = true; if (lastFocus && document.body.contains(lastFocus)) { try { lastFocus.focus({ preventScroll: true }); } catch (e) { /* ignore */ } } }
+  const sheetOpen = () => $$('.sheet').some((s) => !s.hidden);
+  function renderMap() {
+    $('#scene').innerHTML = sceneSVG();
+    $('#heroPortrait').innerHTML = sorcererSVG(save.wear, save.look, save.element);
+    $('#heroName').textContent = save.name;
+    const E = el(), G = GIFTS[save.gift] || GIFTS.brave, yr = YEARS.find((y) => y[0] === save.year);
+    $('#heroChips').innerHTML = `<span class="chip" style="border-color:${E.color};color:${E.glow}">${ICON[E.spell.id].replace('<svg', '<svg width="14" height="14"')} ${E.name} school</span><span class="chip">${G.name}</span><span class="chip">${yr ? yr[1].replace('Y', 'Year ') : ''}</span>`;
+    $('#tGems').innerHTML = fmt(save.gems) + GEM;
+    $('#tStars').innerHTML = totalStars() + '<small style="font-size:14px;color:var(--mist)">/27</small>';
+    $('#tSpells').innerHTML = (1 + SPELLS.filter(spellOpen).length) + '<small style="font-size:14px;color:var(--mist)">/6</small>';
+    let nextMarked = false;
+    $('#floors').innerHTML = VEN.map((vn, i) => {
+      const s = fstat(i), open = isOpen(i), next = open && !s.clears && !nextMarked; if (next) nextMarked = true;
+      return `<li><button class="plaque${open ? '' : ' locked'}${next ? ' next' : ''}" type="button" data-i="${i}" aria-label="Floor ${i + 1}, ${FLOORS[i].name}. ${vn.skill}. ${open ? (s.clears ? s.stars + ' of 3 stars' : 'Not raced yet') : 'Locked'}.">
+        <span class="num">${i + 1}</span><span class="txt"><span class="yr">${vn.years}</span><span class="nm">${FLOORS[i].name}</span><span class="sk">${vn.skill}</span></span>
+        <span class="end">${open ? starsRow(s.stars) + `<span>${s.best ? 'Best ' + clock(s.best) : (next ? 'Race' : '')}</span>` : ICON.lock + '<span>Locked</span>'}</span></button></li>`;
+    }).join('');
+    syncSound();
+  }
+  let floorIdx = 0;
+  function openFloor(i) {
+    floorIdx = i; const vn = VEN[i], s = fstat(i), open = isOpen(i);
+    $('#fsMeta').textContent = `Floor ${i + 1} · ${vn.years}`; $('#fsName').textContent = FLOORS[i].name; $('#fsSkill').textContent = vn.skill; $('#fsBlurb').textContent = FLOORS[i].blurb;
+    $('#fsExample').innerHTML = vn.example;
+    $('#fsBest').innerHTML = s.clears ? `Your best: ${starsRow(s.stars)} in ${clock(s.best)}. Castle record: ${clock(vn.secs * 0.95)}.` : `Castle record: ${clock(vn.secs * 0.95)}. Beat it for a star.`;
+    $('#fsLock').hidden = open; if (!open) $('#fsLock').textContent = `Escape ${FLOORS[i - 1].name} to open this floor, or change your school year.`;
+    $('#fsGo').disabled = !open;
+    openSheet('#floorSheet');
+  }
+  let wardTab = 'robe';
+  function thumb(cat, it) {
+    if (cat === 'robe') return `<svg class="thumb" viewBox="0 0 44 44" aria-hidden="true"><path d="M22 6 C14 9 12 24 7 40 L37 40 C32 24 30 9 22 6Z" fill="${it.c1}"/><path d="M8 37 Q22 42 36 37 L37 40 L7 40Z" fill="${it.trim}"/></svg>`;
+    if (cat === 'pet' && it.id === 'none') return '<svg class="thumb" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="14" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4" opacity=".5"/></svg>';
+    const w = Object.assign({}, save.wear, { [cat]: it.id }), vb = cat === 'hat' ? '30 -6 80 70' : cat === 'staff' ? '86 30 46 46' : '-6 112 54 56';
+    return sorcererSVG(w, save.look, save.element).replace('viewBox="0 0 140 170"', `viewBox="${vb}" class="thumb"`);
+  }
+  function renderWardrobe() {
+    $('#wdGems').innerHTML = `${fmt(save.gems)} gems to spend`;
+    $('#wdPortrait').innerHTML = sorcererSVG(save.wear, save.look, save.element);
+    $('#wdTabs').innerHTML = Object.entries(WARDROBE).map(([k, c]) => `<button class="tab" type="button" role="tab" data-tab="${k}" aria-selected="${k === wardTab}">${c.label}</button>`).join('');
+    $('#wdItems').innerHTML = WARDROBE[wardTab].items.map((it) => {
+      const owned = save.owned[wardTab].includes(it.id), on = save.wear[wardTab] === it.id;
+      const tag = on ? '<span class="cost">Wearing</span>' : owned ? '<span class="cost">Owned</span>' : `<span class="cost${save.gems < it.cost ? ' short' : ''}">${it.cost} ${GEM}</span>`;
+      return `<button class="item${on ? ' on' : ''}" type="button" data-item="${it.id}">${thumb(wardTab, it)}<span>${it.name}</span>${tag}</button>`;
+    }).join('');
+  }
+  function pickItem(id) {
+    const it = item(wardTab, id), owned = save.owned[wardTab].includes(id);
+    if (!owned) { if (save.gems < it.cost) { toast(`You need ${it.cost - save.gems} more gems for the ${it.name}.`); return; } save.gems -= it.cost; save.owned[wardTab].push(id); Sound.spell(); toast(`You bought the ${it.name}.`); }
+    save.wear[wardTab] = id; persist(); renderWardrobe(); renderMap();
+  }
+  function renderBook() {
+    const c = cleared(), st = totalStars();
+    $('#bkSpells').innerHTML = allSpells().map((sp) => { const open = sp.sig || spellOpen(sp); return `<li class="${open ? '' : 'locked'}">${open ? ICON[sp.id] : ICON.lock}<div><b>${sp.name}${sp.sig ? ' (your school)' : ''}</b><p>${sp.desc}</p></div><span class="tag">${open ? '×' + chargesFor(sp) + ' a floor' : 'Escape ' + sp.need + ' floor' + (sp.need > 1 ? 's' : '') + (c ? ` (${c} so far)` : '')}</span></li>`; }).join('');
+    $('#bkFx').innerHTML = EFFECTS.map((fx) => { const open = fxOpen(fx), cur = effectNow().id === fx.id; const sw = fx.colors ? `radial-gradient(circle at 35% 35%, ${fx.colors[1]}, ${fx.colors[0]} 55%, ${fx.colors[2]})` : 'conic-gradient(#ff7a5c, #ffd36b, #8fff9c, #7fd8ff, #a593ff, #ff7a5c)';
+      return `<li class="${open ? 'pickable' : 'locked'}${cur ? ' current' : ''}" data-fx="${fx.id}" ${open ? 'tabindex="0" role="button"' : ''}><span class="fx-swatch" style="background:${sw}"></span><div><b>${fx.name}</b><p>${open ? (cur ? 'In use' : 'Tap to use') : 'Earn ' + fx.stars + ' stars'}</p></div><span class="tag">${open ? '' : st + '/' + fx.stars}</span></li>`; }).join('');
+  }
+
+  // ------------------------------------------------------------ character creator
+  let setupMode = 'first', resetArm = 0, draft = null;
+  function radio(name, val, cur, inner, cls) { return `<label class="choice${cls ? ' ' + cls : ''}"><input type="radio" name="${name}" value="${val}" id="${name}-${val}" ${String(val) === String(cur) ? 'checked' : ''}><span>${inner}</span></label>`; }
+  function openSetup(mode) {
+    setupMode = mode; resetArm = 0;
+    draft = { look: Object.assign({}, save.look), element: save.element, gift: save.gift };
+    $('#suTitle').textContent = mode === 'first' ? 'Create your sorcerer' : 'Your sorcerer';
+    $('#suMeta').textContent = mode === 'first' ? 'Before you enter' : save.name;
+    $('#suGo').textContent = mode === 'first' ? 'Enter the castle' : 'Save';
+    $('#suClose').hidden = mode === 'first'; $('#resetBtn').hidden = mode === 'first'; $('#resetBtn').textContent = 'Start the castle again';
+    $('#nameInput').value = save.name || randomName();
+    $('#elGrid').innerHTML = Object.entries(ELEMENTS).map(([k, E]) => radio('el', k, draft.element, `<b><span style="color:${E.color}">${ICON[E.spell.id].replace('<svg', '<svg class="el-ico"')}</span>${E.name}</b><small>${E.spell.name}: ${E.spell.desc}</small>`, 'card')).join('');
+    $('#giftGrid').innerHTML = Object.entries(GIFTS).map(([k, G]) => radio('gift', k, draft.gift, `<b>${G.name}</b><small>${G.desc}</small>`, 'card')).join('');
+    $('#skinGrid').innerHTML = SKINS.map((c, i) => radio('skin', i, draft.look.skin, `<i class="dot" style="background:${c}" aria-label="Skin tone ${i + 1}"></i>`)).join('');
+    $('#hairGrid').innerHTML = HAIRS.map(([k, l]) => radio('hair', k, draft.look.hair, l)).join('');
+    $('#hairColGrid').innerHTML = HAIRCOLS.map((c, i) => radio('haircol', i, draft.look.hairCol, `<i class="dot" style="background:${c}" aria-label="Hair colour ${i + 1}"></i>`)).join('');
+    $('#eyeGrid').innerHTML = EYES.map(([c, l], i) => radio('eyes', i, draft.look.eyes, `<i class="dot" style="background:${c}"></i>${l}`)).join('');
+    $('#yearGrid').innerHTML = YEARS.map(([y, l]) => radio('year', y, save.year, l)).join('');
+    previewDraft(); openSheet('#setupSheet');
+  }
+  function readDraft() {
+    const v = (n) => ($(`input[name="${n}"]:checked`) || {}).value;
+    draft.element = v('el') || 'fire'; draft.gift = v('gift') || 'brave';
+    draft.look = { skin: +(v('skin') || 0), hair: v('hair') || 'short', hairCol: +(v('haircol') || 0), eyes: +(v('eyes') || 0) };
+  }
+  function previewDraft() { readDraft(); $('#suPortrait').innerHTML = sorcererSVG(save.wear, draft.look, draft.element); }
+  function submitSetup(e) {
+    e.preventDefault(); Sound.unlock(); readDraft();
+    save.name = $('#nameInput').value.trim().replace(/\s+/g, ' ').slice(0, 26) || randomName();
+    save.look = draft.look; if (save.element !== draft.element) save.effect = ''; save.element = draft.element; save.gift = draft.gift;
+    save.year = +(($('input[name="year"]:checked') || {}).value || 6);
+    const first = !save.started; save.started = true; persist(); closeSheet('#setupSheet'); renderMap();
+    toast(first ? `${save.name} enters the castle. Choose a floor.` : 'Saved.');
+  }
+  function resetAll() {
+    if (Date.now() - resetArm > 4000) { resetArm = Date.now(); $('#resetBtn').textContent = 'Tap again to wipe all gems, stars and items'; return; }
+    const snd = save.sound; save = blank(); save.sound = snd; persist(); closeSheet('#setupSheet'); renderMap(); setTimeout(() => openSetup('first'), 60);
+  }
+  function syncSound() { const b = $('#soundBtn'); b.innerHTML = save.sound ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 9a4 4 0 0 1 0 6M18.6 6.4a7.6 7.6 0 0 1 0 11.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="m16.5 9.5 5 5m0-5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'; b.setAttribute('aria-label', save.sound ? 'Turn sound off' : 'Turn sound on'); }
+
+  function wire() {
+    $('#floors').addEventListener('click', (e) => { const b = e.target.closest('.plaque'); if (b) openFloor(+b.dataset.i); });
+    $('#fsGo').addEventListener('click', () => startFloor(floorIdx));
+    $('#settingsBtn').addEventListener('click', () => openSetup('settings'));
+    $('#soundBtn').addEventListener('click', () => { save.sound = !save.sound; persist(); syncSound(); if (save.sound) Sound.unlock(); });
+    $('#wardrobeBtn').addEventListener('click', () => { renderWardrobe(); openSheet('#wardSheet'); });
+    $('#bookBtn').addEventListener('click', () => { renderBook(); openSheet('#bookSheet'); });
+    $('#wdTabs').addEventListener('click', (e) => { const t = e.target.closest('.tab'); if (t) { wardTab = t.dataset.tab; renderWardrobe(); } });
+    $('#wdItems').addEventListener('click', (e) => { const b = e.target.closest('.item'); if (b) pickItem(b.dataset.item); });
+    const pickFx = (e) => { const li = e.target.closest('li.pickable'); if (!li) return; save.effect = li.dataset.fx; persist(); renderBook(); toast('Wand sparkle changed.'); };
+    $('#bkFx').addEventListener('click', pickFx); $('#bkFx').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pickFx(e); } });
+    $$('[data-close]').forEach((b) => b.addEventListener('click', () => closeSheet('#' + b.closest('.sheet').id)));
+    $$('.sheet').forEach((s) => s.addEventListener('click', (e) => { if (e.target === s && ['floorSheet', 'wardSheet', 'bookSheet'].includes(s.id)) closeSheet('#' + s.id); }));
+    $('#setupForm').addEventListener('submit', submitSetup);
+    $('#setupForm').addEventListener('change', previewDraft);
+    $('#diceBtn').addEventListener('click', () => { $('#nameInput').value = randomName(); });
+    $('#resetBtn').addEventListener('click', resetAll);
+    $('#doors').addEventListener('click', (e) => { const d = e.target.closest('.door'); if (d) choose(+d.dataset.d); });
+    $('#spells').addEventListener('click', (e) => { const s = e.target.closest('.spell'); if (s && !s.disabled) cast(s.dataset.spell); });
+    $('#stDone').addEventListener('click', () => { closeSheet('#stepsSheet'); if (run && run.state === 'race') { status('A new riddle appears.', ''); newRiddle(); } });
+    $('#quitBtn').addEventListener('click', () => pause('Paused', 'The Shadow is frozen until you come back.'));
+    $('#resumeBtn').addEventListener('click', () => closeSheet('#pauseSheet'));
+    $('#leaveBtn').addEventListener('click', toMap);
+    $('#nextBtn').addEventListener('click', () => startFloor(run.vi + 1));
+    $('#againBtn').addEventListener('click', () => startFloor(run.vi));
+    $('#mapBtn').addEventListener('click', toMap);
+    document.addEventListener('visibilitychange', () => { if (document.hidden && run && !sheetOpen()) pause('Paused', 'The castle waited for you. The Shadow is frozen until you come back.'); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { const open = $$('.sheet').filter((s) => !s.hidden && !(s.id === 'setupSheet' && setupMode === 'first')); if (open.length) { const s = open[open.length - 1]; if (s.id === 'stepsSheet') $('#stDone').click(); else closeSheet('#' + s.id); } else if (!$('#play').hidden) $('#quitBtn').click(); return; }
+      if (!run || $('#play').hidden || sheetOpen() || /INPUT/.test(e.target.tagName)) return;
+      if (['1', '2', '3'].includes(e.key)) choose(+e.key - 1);
+    });
+    let rz = 0; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { if (run && !$('#play').hidden) { sizeCanvas(); fitMain(); } }, 120); });
+  }
+
+  let booted = false;
+  function start() {
+    if (booted) return; booted = true; load(); wire();
+    if (!save.name) save.name = randomName();
+    renderMap(); if (!save.started) openSetup('first');
+    if (window.__CASTLE_TEST__) window.__castle = { get run() { return run; }, get save() { return save; }, choose, cast, startFloor, rightDoor: () => run.values.indexOf(run.q.answer) };
+  }
+  const hot = window.claude && window.claude.hot;
+  try { if (hot && typeof hot.snapshot === 'function') hot.snapshot(() => ({})); } catch (e) { /* ignore */ }
+  try { if (hot && typeof hot.ready === 'function') hot.ready(start); else start(); } catch (e) { start(); }
+  setTimeout(start, 700);
+})();
+</script>
+
+</body>
+</html>
